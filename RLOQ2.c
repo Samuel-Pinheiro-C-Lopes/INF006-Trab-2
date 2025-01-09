@@ -30,7 +30,7 @@ typedef struct{
 Pilha* iniciarPilha();
 void inserirItemPilha(Pilha **pilha, char *valor);
 int tirarItemPilha(Pilha **pilha, char *apagado);
-
+void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila);
 
 int main(){
 
@@ -78,3 +78,30 @@ int tirarItemPilha(Pilha **pilha, char *apagado){
     return 1;   
 }
 
+void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila) {
+    int iCont, jCont;
+    char *novoNome = malloc(sizeof(char) * tam_max_nome);
+
+    while (fgets(linha, tam_max_linha, entrada) != NULL) {
+        iCont = 0;
+
+        while (linha[iCont] != '\n' && linha[iCont] != '\0') {
+            jCont = 0;
+
+            while (linha[iCont] != ' ' && linha[iCont] != '\n' && linha[iCont] != '\0') {
+                novoNome[jCont] = linha[iCont];
+                iCont++;
+                jCont++;
+            }
+
+            if (jCont > 0) {
+                novoNome[jCont] = '\0';
+                //O nome já estará pronto para ser adicionado na pilha. Aqui deverá ser feita as validações.
+            }
+
+            iCont++;
+        }
+    }
+
+    free(novoNome);
+}
