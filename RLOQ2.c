@@ -30,6 +30,9 @@ typedef struct{
 Pilha* iniciarPilha();
 void inserirItemPilha(Pilha **pilha, char *valor);
 int tirarItemPilha(Pilha **pilha, char *apagado);
+Fila* iniciarFila();
+void inserirItemFila(Fila **fila, char *valor);
+int tirarItemFila(Fila **fila, char *apagado);
 void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila);
 
 int main(){
@@ -73,10 +76,62 @@ int tirarItemPilha(Pilha **pilha, char *apagado){
     apagado[strlen((*pilha)->topo->valor)] = '\0';
     
     ItemPilha *itemApagado = (*pilha)->topo;
+    free((*pilha)->topo->valor);
     (*pilha)->topo = (*pilha)->topo->abaixo;
     free(itemApagado);
     return 1;   
 }
+
+Fila* iniciarFila() {
+    Fila *fila = malloc(sizeof(Fila));
+    fila->inicio = NULL;
+    fila->fim = NULL;
+    return fila;
+}
+
+void inserirItemFila(Fila **fila, char *valor) {
+    int iCont;
+    ItemFila *novoItem = malloc(sizeof(ItemFila));
+    novoItem->valor = malloc(strlen(valor) + 1);
+
+    for (iCont = 0; iCont < strlen(valor); iCont++) {
+        novoItem->valor[iCont] = valor[iCont];
+    }
+    novoItem->valor[iCont] = '\0';
+
+    novoItem->atras = NULL;
+    if ((*fila)->inicio == NULL) {
+        (*fila)->inicio = novoItem;
+        (*fila)->fim = novoItem;
+    } else {
+        (*fila)->fim->atras = novoItem;
+        (*fila)->fim = novoItem;
+    }
+}
+
+int tirarItemFila(Fila **fila, char *apagado) {
+    if ((*fila)->inicio == NULL) {
+        return 0;
+    }
+
+    int iCont;
+    for (iCont = 0; iCont < strlen((*fila)->inicio->valor); iCont++) {
+        apagado[iCont] = (*fila)->inicio->valor[iCont];
+    }
+    apagado[iCont] = '\0';
+
+    ItemFila *itemApagado = (*fila)->inicio;
+    (*fila)->inicio = (*fila)->inicio->atras;
+    free(itemApagado->valor);
+    free(itemApagado);
+
+    if ((*fila)->inicio == NULL) {
+        (*fila)->fim = NULL;
+    }
+
+    return 1;
+}
+
 
 void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila) {
     int iCont, jCont;
