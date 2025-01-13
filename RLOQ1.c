@@ -8,30 +8,57 @@
 
 typedef struct itemLista ItemLista;
 typedef struct lista Lista;
+typedef struct cbctlistas CbctListas;
 
+// item da lista
 struct itemLista{
     ItemLista *prox;
     int valor;
 };
 
+// cabeçote para itens de uma lista
 struct lista{
-    Lista* prox;
     ItemLista *inicio;
+    Lista *prox;
     int soma;
 };
 
+// cabeçote para as listas
+struct cbctlistas{
+    Lista *inicio;
+};
 
+
+CbctListas* iniciarCbctListas();
 Lista* iniciarLista();
+ItemLista* iniciarItemLista(int valor);
 void inserirItemLista(Lista *lista, int valor);
-void inserirLista(Lista *lista, Lista *novaLista);
+void inserirLista(CbctListas *cbct, Lista *novaLista);
 int lerLista(char *linha, FILE *entrada, Lista *lista);
 
 int main(){
-
+    // cabeçote das listas, será usado ao longo do tempo de execução da aplicação 
+    CbctListas* cbct = iniciarCbctListas();
     
     return 1;
 }
 
+// declara, aloca e inicializa um novo item de lista
+ItemLista* iniciarItemLista(int valor){
+    ItemLista *itemLista = (ItemLista*) malloc(sizeof(ItemLista));
+    itemLista->prox = NULL; 
+    itemLista->valor = valor;
+    return itemLista;
+}
+
+// declara, aloca e inicializa um novo cabeçote de listas
+CbctListas* iniciarCbctListas(){
+    CbctListas *listas = (CbctListas*) malloc(sizeof(CbctListas));
+    listas->inicio = NULL; 
+    return listas;
+}
+
+// declara, aloca a inicializa uma nova lista
 Lista* iniciarLista(){
     Lista *lista = (Lista*) malloc(sizeof(Lista));
     lista->soma = 0;
@@ -40,10 +67,39 @@ Lista* iniciarLista(){
     return lista;
 }
 
+// Summary: insere uma lista a uma lista de listas na sua posição certa, considerando a soma dos
+// elementos dela
+// Parameters: <cbct: cabeçote da lista de listas> e <novaLista: nova lista a ser inserida>
+// Returns: <void>
+void inserirLista(CbctListas *cbct, Lista *novaLista){
+    // se a novaLista tiver a soma inferior às outras
+    if (cbct->inicio->soma > novaLista->soma){
+        // insere
+        novaLista->prox = cbct->inicio;
+        cbct->inicio = novaLista;
+    }
+
+    // lista atual
+    Lista *atualLista = cbct->inicio;
+
+    // encontra a posição correta, final da lista de listas ou posição na qual
+    // a soma do próximo é maior
+    while (atualLista->prox != NULL )
+        if (atualLista->prox->soma < novaLista->soma)
+            atualLista = atualLista->prox;
+
+    // insere
+    novaLista->prox = atualLista->prox;
+    atualLista->prox = novaLista;
+}
+
+// Summary: adiciona um item de lista a uma lista em sua posição correta, ordenada crescentemente
+// Parameters: <lista: cabeçote da lista cujo elemento deve ser inserido> e <novoValor: chave do
+// novo elemento da lista>
+// retorno: <void>
 void inserirItemLista(Lista *lista, int novoValor){
     // declara e inicializa o item
-    ItemLista* item = (ItemLista*) malloc(sizeof(ItemLista));
-    item->valor = novoValor; 
+    ItemLista* item = iniciarItemLista(novoValor);
 
     // incrementa a soma
     lista->soma += novoValor;
@@ -62,8 +118,9 @@ void inserirItemLista(Lista *lista, int novoValor){
     }
     else{
         // encontra o final ou posição correta - próximo valor é maior que o novo
-        while(atual->prox != NULL && atual->prox->valor < novoValor)
-            atual = atual->prox;
+        while(atual->prox != NULL)
+            if (atual->prox->valor < novoValor)
+                atual = atual->prox;
 
         // insere
         item->prox = atual->prox;
@@ -72,57 +129,6 @@ void inserirItemLista(Lista *lista, int novoValor){
 }
 
 /*
-Fila* iniciarFila() {
-    Fila *fila = malloc(sizeof(Fila));
-    fila->inicio = NULL;
-    fila->fim = NULL;
-    return fila;
-}
-
-void inserirItemFila(Fila **fila, char *valor) {
-    int iCont;
-    ItemFila *novoItem = malloc(sizeof(ItemFila));
-    novoItem->valor = malloc(strlen(valor) + 1);
-
-    for (iCont = 0; iCont < strlen(valor); iCont++) {
-        novoItem->valor[iCont] = valor[iCont];
-    }
-    novoItem->valor[iCont] = '\0';
-
-    novoItem->atras = NULL;
-    if ((*fila)->inicio == NULL) {
-        (*fila)->inicio = novoItem;
-        (*fila)->fim = novoItem;
-    } else {
-        (*fila)->fim->atras = novoItem;
-        (*fila)->fim = novoItem;
-    }
-}
-
-int tirarItemFila(Fila **fila, char *apagado) {
-    if ((*fila)->inicio == NULL) {
-        return 0;
-    }
-
-    int iCont;
-    for (iCont = 0; iCont < strlen((*fila)->inicio->valor); iCont++) {
-        apagado[iCont] = (*fila)->inicio->valor[iCont];
-    }
-    apagado[iCont] = '\0';
-
-    ItemFila *itemApagado = (*fila)->inicio;
-    (*fila)->inicio = (*fila)->inicio->atras;
-    free(itemApagado->valor);
-    free(itemApagado);
-
-    if ((*fila)->inicio == NULL) {
-        (*fila)->fim = NULL;
-    }
-
-    return 1;
-}
-
-
 void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila) {
     int iCont, jCont;
     char *novoNome = malloc(sizeof(char) * tam_max_nome);
