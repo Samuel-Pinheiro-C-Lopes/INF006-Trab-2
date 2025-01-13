@@ -40,7 +40,6 @@ Lista* iniciarLista(){
     return lista;
 }
 
-/*
 void inserirItemLista(Lista *lista, int novoValor){
     // declara e inicializa o item
     ItemLista* item = (ItemLista*) malloc(sizeof(ItemLista));
@@ -71,7 +70,6 @@ void inserirItemLista(Lista *lista, int novoValor){
         atual->prox = item->prox;
     }
 }
-*/
 
 /*
 Fila* iniciarFila() {
