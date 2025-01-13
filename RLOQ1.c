@@ -34,7 +34,7 @@ Lista* iniciarLista();
 ItemLista* iniciarItemLista(int valor);
 void inserirItemLista(Lista *lista, int valor);
 void inserirLista(CbctListas *cbct, Lista *novaLista);
-int lerLista(Lista* novaLista, char entrada[]);
+int lerLista(Lista* novaLista, char entrada[], int* countLinha);
 
 int main(){
     // cabeçote das listas, será usado ao longo do tempo de execução da aplicação 
@@ -134,13 +134,15 @@ void inserirItemLista(Lista *lista, int novoValor){
 void lerTodasListas(CbctListas* cbct, FILE *entrada){
     // linha a ser lida
     static char linha[tam_max_linha];
+    int countLinha;
 
     Lista* novaLista = iniciarLista();
 
     // enquanto houver linhas a serem lidas no arquivo de entrada
     while (fgets(linha, tam_max_linha, entrada) != NULL){
+        countLinha = 0;
         // enquanto houverem listas na linha, leia a lista e atribua
-        while (lerLista(novaLista, linha) != NAO_E_LISTA) {
+        while (lerLista(novaLista, linha, &countLinha) != NAO_E_LISTA) {
             // insere a nova lista em sua posição correta
             inserirLista(cbct, novaLista);
             // nova lista
@@ -153,13 +155,13 @@ void lerTodasListas(CbctListas* cbct, FILE *entrada){
 }
 
 /*
-int lerLista(Lista* lista, char linha[]){
-    
-    while (linha[0])
+int lerLista(Lista* lista, char linha[], int *countLinha){ 
+    while (linha[] !)
 
     return 1;
 }
 */
+
 /*
 void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila) {
     int iCont, jCont;
