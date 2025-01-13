@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define tam_max_linha (1000)
-#define tam_max_nome (50)
+#define NAO_E_LISTA (-11) 
 
 typedef struct itemLista ItemLista;
 typedef struct lista Lista;
@@ -34,7 +34,7 @@ Lista* iniciarLista();
 ItemLista* iniciarItemLista(int valor);
 void inserirItemLista(Lista *lista, int valor);
 void inserirLista(CbctListas *cbct, Lista *novaLista);
-int lerLista(char *linha, FILE *entrada, Lista *lista);
+int lerLista(Lista* novaLista, char entrada[]);
 
 int main(){
     // cabeçote das listas, será usado ao longo do tempo de execução da aplicação 
@@ -128,6 +128,38 @@ void inserirItemLista(Lista *lista, int novoValor){
     }
 }
 
+// Summary: Lê todas as listas presentes no arquivo de entrada, atribuindo-as ao cabeçote
+// Parameters: <cbct: cabeçote das listas a ser preenchido> e <entrada: arquivo de entrada>
+// Returns: <void>
+void lerTodasListas(CbctListas* cbct, FILE *entrada){
+    // linha a ser lida
+    static char linha[tam_max_linha];
+
+    Lista* novaLista = iniciarLista();
+
+    // enquanto houver linhas a serem lidas no arquivo de entrada
+    while (fgets(linha, tam_max_linha, entrada) != NULL){
+        // enquanto houverem listas na linha, leia a lista e atribua
+        while (lerLista(novaLista, linha) != NAO_E_LISTA) {
+            // insere a nova lista em sua posição correta
+            inserirLista(cbct, novaLista);
+            // nova lista
+            novaLista = iniciarLista();
+        }
+    }
+
+    // libera lista alocada excedentemente
+    free(novaLista);
+}
+
+/*
+int lerLista(Lista* lista, char linha[]){
+    
+    while (linha[0])
+
+    return 1;
+}
+*/
 /*
 void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila) {
     int iCont, jCont;
