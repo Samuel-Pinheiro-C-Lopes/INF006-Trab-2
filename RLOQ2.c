@@ -34,9 +34,10 @@ Fila* iniciarFila();
 void inserirItemFila(Fila **fila, char *valor);
 int tirarItemFila(Fila **fila, char *apagado);
 void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila);
+char* toLower(char *palavra);
+int checarOrdemAlfabetica(char *palavra1, char *palavra2);
 
 int main(){
-
     
     return 1;
 }
@@ -132,6 +133,40 @@ int tirarItemFila(Fila **fila, char *apagado) {
     return 1;
 }
 
+char* toLower(char *palavra){
+    int iCont;
+    char *palavraMinuscula = malloc(sizeof(char) * strlen(palavra));
+    
+    for(iCont = 0; iCont < strlen(palavra); iCont++){
+        palavraMinuscula[iCont] = palavra[iCont] >= 'A' && palavra[iCont] <= 'Z' ? palavra[iCont] + ' ' : palavra[iCont];
+    }
+
+    return palavraMinuscula;
+}
+
+int checarOrdemAlfabetica(char *palavra1, char *palavra2){
+    // Retorno 1 : Primeira palavra vem primeiro;
+    // Retorno 2 : Segunda palavra vem primeiro;
+    int iCont;
+    int tamanhoMaximoCheck = strlen(palavra1) < strlen(palavra2) ? strlen(palavra1) : strlen(palavra2);
+    
+    char *p1Minusculo = toLower(palavra1);
+    char *p2Minusculo = toLower(palavra2);
+
+    for(iCont = 0; iCont < tamanhoMaximoCheck; iCont++){
+        if(p1Minusculo[iCont] == p2Minusculo[iCont]){
+            continue;
+        }
+        if(p1Minusculo[iCont] > p2Minusculo[iCont]){
+            return 2;
+        }
+        else{
+            return 1;
+        }
+    }
+    return 1;
+
+}
 
 void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila) {
     int iCont, jCont;
@@ -160,3 +195,4 @@ void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fil
 
     free(novoNome);
 }
+
