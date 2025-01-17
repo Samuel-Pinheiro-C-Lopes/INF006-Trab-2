@@ -36,6 +36,7 @@ void inserirItemLista(Lista *lista, int valor);
 void inserirLista(CbctListas *cbct, Lista *novaLista);
 int lerLista(Lista* novaLista, char entrada[], int* countLinha);
 char* obterSubCadeia(char *cadeia, char separador);
+int cadeiaParaInteiro(char* cadeia);
 
 int main(){
     // cabeçote das listas, será usado ao longo do tempo de execução da aplicação 
@@ -168,21 +169,44 @@ int lerLista(Lista* lista, char linha[], int *countLinha){
 char* obterSubCadeia(char *cadeia, char separador){
     // subcadeia
     static char subcadeia[tam_max_linha];
-    // contador
-    int i;
+    int i; // contador
 
-    for (i = 0; cadeia[i] != separador && cadeia[i] != '\n' && i < tam_max_linha; i += sizeof(char))
+    // copia até sentinelas - tamanho máximo, separador e fim de linha
+    for (i = 0; cadeia[i] != separador && cadeia[i] != '\0' && i < tam_max_linha - 1; i += sizeof(char))
         subcadeia[i] = cadeia[i];
 
-    subcadeia[i++] = '\n';
+    // final da subcadeia
+    subcadeia[++i] = '\n';
 
+    // endereço da subcadeia
     return &subcadeia;
 }
 
-int CadeiaParaNumero(char* cadeia){
-    // se é negativo
+// Summary: converte um texto para seu equivalente numérico inteiro
+int cadeiaParaInteiro(char* cadeia){
+    // propriedades
+    int inteiro = 0;
     int negativo = 0;
-    return negativo;
+
+    // se for negativo
+    if (*cadeia == '-')
+    {
+        negativo = 1; 
+        cadeia += sizeof(char);
+    }
+
+    // enquanto  não encontrar o final da linha
+    while (*cadeia != '\0')
+    {
+        inteiro *= 10; // incrementa o número de algarismos e ordem de grandeza
+        inteiro += *cadeia - 48;  // atribui o novo algarismo em sua casa atual
+        cadeia += sizeof(char); // incrementa o indexador
+    }
+
+    if (negativo)
+        inteiro *= -1;
+
+    return inteiro; // resultado
 }
 
 
