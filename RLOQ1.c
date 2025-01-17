@@ -35,11 +35,12 @@ ItemLista* iniciarItemLista(int valor);
 void inserirItemLista(Lista *lista, int valor);
 void inserirLista(CbctListas *cbct, Lista *novaLista);
 int lerLista(Lista* novaLista, char entrada[], int* countLinha);
+char* obterSubCadeia(char *cadeia, char separador);
 
 int main(){
     // cabeçote das listas, será usado ao longo do tempo de execução da aplicação 
     CbctListas* cbct = iniciarCbctListas();
-    
+
     return 1;
 }
 
@@ -154,13 +155,36 @@ void lerTodasListas(CbctListas* cbct, FILE *entrada){
     free(novaLista);
 }
 
-/*
+
 int lerLista(Lista* lista, char linha[], int *countLinha){ 
-    while (linha[] !)
 
     return 1;
 }
-*/
+
+// Summary: obtém uma cadeia de caracteres como entrada tal como um separador, retorna
+// endereço para uma subcadeia contendo o início até o separador - sem o incluir
+// Parameters: <cadeia: cadeia de caracteres de entrada> e <separador: caracter de separação>
+// Returns: <char *: endereço da variável estática "subcadeia", contendo a subcadeia lida>
+char* obterSubCadeia(char *cadeia, char separador){
+    // subcadeia
+    static char subcadeia[tam_max_linha];
+    // contador
+    int i;
+
+    for (i = 0; cadeia[i] != separador && cadeia[i] != '\n' && i < tam_max_linha; i += sizeof(char))
+        subcadeia[i] = cadeia[i];
+
+    subcadeia[i++] = '\n';
+
+    return &subcadeia;
+}
+
+int CadeiaParaNumero(char* cadeia){
+    // se é negativo
+    int negativo = 0;
+    return negativo;
+}
+
 
 /*
 void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila) {
