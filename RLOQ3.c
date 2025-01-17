@@ -3,6 +3,7 @@
 
 typedef struct le LE;
 typedef struct li LI;
+typedef struct itemListaInt ItemListaInt;
 
 typedef struct li{
     LI *proximo;
@@ -16,12 +17,23 @@ typedef struct le{
     int valor; 
 }LE;
 
+typedef struct itemListaInt{
+    int valor;
+    ItemListaInt *proximo;
+}ItemListaInt;
+
+typedef struct{
+    ItemListaInt *primeiro;
+    int quantidadeItens;
+}CabecoteListaInt;
+
 LE* inicializarLE(int valor);
 void adicionarLE(int valor, LE **le);
 void adicionarLi(float valor, LE **le);
+CabecoteListaInt* inicializarListaInt();
+void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
 
 int main(){
-    
 
     return 1;
 }
@@ -42,8 +54,7 @@ void adicionarLE(int valor, LE **inicio){
     }
 
     LE *novoLe = inicializarLE(valor);
-    LE *aux = malloc(sizeof(LE));
-    aux = (*inicio);
+    LE *aux = (*inicio);
 
     while(aux->proximo != NULL){
         aux = aux->proximo;
@@ -63,12 +74,39 @@ void adicionarLi(float valor, LE **le){
         return;
     }
 
-    LI *aux = malloc(sizeof(LI));
-    aux = (*le)->li;
+    LI *aux = (*le)->li;
     do{
         aux = aux->proximo;
     }while(aux->proximo != (*le)->li);
 
     novaLi->proximo = aux->proximo;
     aux->proximo = novaLi;
+}
+
+CabecoteListaInt* inicializarListaInt(){
+    CabecoteListaInt *novaLista = malloc(sizeof(CabecoteListaInt));
+    novaLista->primeiro = NULL;
+    novaLista->quantidadeItens = 0;
+    return novaLista;
+}
+
+void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor){
+    ItemListaInt *novoItemLista = malloc(sizeof(ItemListaInt));
+    novoItemLista->valor = valor;
+    novoItemLista->proximo = NULL;
+
+    if((*cabecote)->primeiro == NULL){
+        (*cabecote)->primeiro = novoItemLista;
+        (*cabecote)->quantidadeItens = 1;
+        return;
+    }
+
+    ItemListaInt *aux = (*cabecote)->primeiro;
+
+    while(aux->proximo != NULL){
+        aux = aux->proximo;
+    }
+
+    aux->proximo = novoItemLista;
+    (*cabecote)->quantidadeItens++;
 }
