@@ -32,8 +32,8 @@ struct cbctlistas{
 CbctListas* iniciarCbctListas();
 Lista* iniciarLista();
 ItemLista* iniciarItemLista(int valor);
-void inserirItemLista(Lista *lista, int valor);
-void inserirLista(CbctListas *cbct, Lista *novaLista);
+void inserirItemListaOrdenado(Lista *lista, int valor);
+void inserirListaOrdenada(CbctListas *cbct, Lista *novaLista);
 int lerLista(Lista* novaLista, char entrada[], int* countLinha);
 char* obterSubCadeia(char *cadeia, char separador);
 int cadeiaParaInteiro(char* cadeia);
@@ -75,7 +75,7 @@ Lista* iniciarLista(){
 // elementos dela
 // Parameters: <cbct: cabeçote da lista de listas> e <novaLista: nova lista a ser inserida>
 // Returns: <void>
-void inserirLista(CbctListas *cbct, Lista *novaLista){
+void inserirListaOrdenada(CbctListas *cbct, Lista *novaLista){
     // se a novaLista tiver a soma inferior às outras
     if (cbct->inicio->soma > novaLista->soma){
         // insere
@@ -101,7 +101,7 @@ void inserirLista(CbctListas *cbct, Lista *novaLista){
 // Parameters: <lista: cabeçote da lista cujo elemento deve ser inserido> e <novoValor: chave do
 // novo elemento da lista>
 // retorno: <void>
-void inserirItemLista(Lista *lista, int novoValor){
+void inserirItemListaOrdenado(Lista *lista, int novoValor){
     // declara e inicializa o item
     ItemLista* item = iniciarItemLista(novoValor);
 
@@ -114,21 +114,20 @@ void inserirItemLista(Lista *lista, int novoValor){
     if (atual == NULL || atual->valor > novoValor){
         // insere
         item->prox = lista->inicio;
-        lista->inicio = item;
 
         // atualiza o cabeçote
         lista->inicio = item;
-        lista->soma += item->valor;
     }
     else{
         // encontra o final ou posição correta - próximo valor é maior que o novo
-        while(atual->prox != NULL)
-            if (atual->prox->valor < novoValor)
-                atual = atual->prox;
+        while(atual->prox != NULL && atual->prox->valor < novoValor)
+        {
+            atual = atual->prox;
+        }
 
         // insere
         item->prox = atual->prox;
-        atual->prox = item->prox;
+        atual->prox = item;
     }
 }
 
@@ -138,17 +137,17 @@ void inserirItemLista(Lista *lista, int novoValor){
 void lerTodasListas(CbctListas* cbct, FILE *entrada){
     // linha a ser lida
     static char linha[tam_max_linha];
-    int countLinha;
+    int contLinha;
 
     Lista* novaLista = iniciarLista();
 
     // enquanto houver linhas a serem lidas no arquivo de entrada
     while (fgets(linha, tam_max_linha, entrada) != NULL){
-        countLinha = 0;
+        contLinha = 0;
         // enquanto houverem listas na linha, leia a lista e atribua
-        while (lerLista(novaLista, linha, &countLinha) != NAO_E_LISTA) {
+        while (lerLista(novaLista, linha, &contLinha) != NAO_E_LISTA) {
             // insere a nova lista em sua posição correta
-            inserirLista(cbct, novaLista);
+            inserirListaOrdenada(cbct, novaLista);
             // nova lista
             novaLista = iniciarLista();
         }
@@ -158,8 +157,43 @@ void lerTodasListas(CbctListas* cbct, FILE *entrada){
     free(novaLista);
 }
 
+// Sumário: Lê uma lista de uma entrada de texto, cujos números inteiros devem ser
+// espaçados em 1 entre si e a letra 's' demarca o início de outra lista. Navega pelos
+// espaços.
+// Parâmetros: <lista: lista a ser preenchida>, <linha: texto de entrada> e <contLinha: índice atual
+// do texto de entrada
+// Retorno: <int: NAO_E_LISTA se for chamado para um formato inválido ou 1 se suceder na
+// inserção dos elementos>
+int lerLista(Lista* lista, char linha[], int *contLinha){ 
+    static char separadores[] = " ";
+    static char sentinela = 's';
+    int indice;
 
-int lerLista(Lista* lista, char linha[], int *countLinha){ 
+    // start 1 4 7 -1 5 start 5 2 4 start 4
+
+    // avança até a próxima ocorrência de número
+    indice = proximosNaCadeia(linha, separadores);
+    if (indice == -1) // sentinela, caso não haja
+        return NAO_E_LISTA; 
+
+    // avança até o indíce avaliado
+    *contLinha += indice;
+
+    do {
+        // avança até o que deve ser um número
+        *(contLinha) += sizeof(char);
+
+        // sentinela, verifica se é o início de outra lista ou de fato um número
+        if (linha[*contLinha] == sentinela) 
+            return 1;
+
+        // insere na lista            // converte      // obtém cadeia correspondente ao número
+        inserirItemListaOrdenado(lista, cadeiaParaInteiro(obterSubCadeia(&linha[*contLinha], ' ')));
+
+        // busca próxima ocorrência de número ou fim da lista
+        *contLinha += proximosOuFimNaCadeia(&linha[*contLinha], separadores);
+
+    } while (linha[*(contLinha)] != '\0'); // sentinela: final da linha
 
     return 1;
 }
@@ -175,7 +209,6 @@ int proximosNaCadeia(char *cadeia, char *separadores){
     // busca a primeira ocorrência de um dos separadores na cadeia de entrada
     for (i = 0; cadeia[i] != '\0'; i++)
     {
-        printf("%d", i);
         for (k = 0; separadores[k] != '\0'; k++)
             if (cadeia[i] == separadores[k])
                 return i;
@@ -195,7 +228,6 @@ int proximosOuFimNaCadeia(char *cadeia, char *separadores){
     // busca a primeira ocorrência de um dos separadores na cadeia de entrada
     for (i = 0; cadeia[i] != '\0'; i++)
     {
-        printf("%d", i);
         for (k = 0; separadores[k] != '\0'; k++)
             if (cadeia[i] == separadores[k])
                 goto fim;
@@ -219,7 +251,7 @@ char* obterSubCadeia(char *cadeia, char separador){
         subcadeia[i] = cadeia[i];
 
     // final da subcadeia
-    subcadeia[++i] = '\n';
+    subcadeia[i] = '\0';
 
     // endereço da subcadeia
     return &subcadeia;
