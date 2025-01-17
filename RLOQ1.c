@@ -37,6 +37,7 @@ void inserirLista(CbctListas *cbct, Lista *novaLista);
 int lerLista(Lista* novaLista, char entrada[], int* countLinha);
 char* obterSubCadeia(char *cadeia, char separador);
 int cadeiaParaInteiro(char* cadeia);
+int proximosNaCadeia(char *cadeia, char* separadores);
 
 int main(){
     // cabeçote das listas, será usado ao longo do tempo de execução da aplicação 
@@ -162,6 +163,26 @@ int lerLista(Lista* lista, char linha[], int *countLinha){
     return 1;
 }
 
+// Sumário: busca pela posição em uma cadeia da primeira ocorrência de um ou mais 
+// caracteres de separação
+// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <separadores: caracteres de busca>
+// Returna: <int: índice de posição da ocorrência ou -1 caso não haja> 
+int proximosNaCadeia(char *cadeia, char* separadores){
+    // contadores
+    int i, k;
+
+    // busca a primeira ocorrência de um dos separadores na cadeia de entrada
+    for (i = 0; cadeia[i] != '\0'; i++)
+    {
+        printf("%d", i);
+        for (k = 0; separadores[k] != '\0'; k++)
+            if (cadeia[i] == separadores[k])
+                return i;
+    }
+    
+    return -1;
+}
+
 // Summary: obtém uma cadeia de caracteres como entrada tal como um separador, retorna
 // endereço para uma subcadeia contendo o início até o separador - sem o incluir
 // Parameters: <cadeia: cadeia de caracteres de entrada> e <separador: caracter de separação>
@@ -183,6 +204,8 @@ char* obterSubCadeia(char *cadeia, char separador){
 }
 
 // Summary: converte um texto para seu equivalente numérico inteiro
+// Parameters: <cadeia: indexador da cadeia a ser convertida>
+// Returns: <int: numero resultante>
 int cadeiaParaInteiro(char* cadeia){
     // propriedades
     int inteiro = 0;
