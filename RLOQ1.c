@@ -37,7 +37,8 @@ void inserirLista(CbctListas *cbct, Lista *novaLista);
 int lerLista(Lista* novaLista, char entrada[], int* countLinha);
 char* obterSubCadeia(char *cadeia, char separador);
 int cadeiaParaInteiro(char* cadeia);
-int proximosNaCadeia(char *cadeia, char* separadores);
+int proximosNaCadeia(char *cadeia, char* separadores); 
+int proximosOuFimNaCadeia(char *cadeia, char *separadores); 
 
 int main(){
     // cabeçote das listas, será usado ao longo do tempo de execução da aplicação 
@@ -167,7 +168,7 @@ int lerLista(Lista* lista, char linha[], int *countLinha){
 // caracteres de separação
 // Parâmetros: <cadeia: cadeia de caracteres de entrada> e <separadores: caracteres de busca>
 // Returna: <int: índice de posição da ocorrência ou -1 caso não haja> 
-int proximosNaCadeia(char *cadeia, char* separadores){
+int proximosNaCadeia(char *cadeia, char *separadores){
     // contadores
     int i, k;
 
@@ -181,6 +182,27 @@ int proximosNaCadeia(char *cadeia, char* separadores){
     }
     
     return -1;
+}
+
+// Sumário: busca pela posição em uma cadeia da primeira ocorrência do final e de um ou mais 
+// caracteres de separação
+// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <separadores: caracteres de busca>
+// Returna: <int: índice de posição da ocorrência> 
+int proximosOuFimNaCadeia(char *cadeia, char *separadores){
+        // contadores
+    int i, k;
+
+    // busca a primeira ocorrência de um dos separadores na cadeia de entrada
+    for (i = 0; cadeia[i] != '\0'; i++)
+    {
+        printf("%d", i);
+        for (k = 0; separadores[k] != '\0'; k++)
+            if (cadeia[i] == separadores[k])
+                goto fim;
+    }
+    
+    // retorna o índice
+    fim: return i;
 }
 
 // Summary: obtém uma cadeia de caracteres como entrada tal como um separador, retorna
