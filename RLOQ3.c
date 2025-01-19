@@ -609,3 +609,30 @@ int preencherCadeia(char *cadeia, char *conteudo){
 
     return cont;
 }
+
+// Sumário: Converte um inteiro para uma cadeia de caracteres
+// com seu conteúdo
+// Parâmetros: <inteiro: número inteiro a ser lido>
+// Retorna: <char *: ponteiro para a cadeia resultante>
+char* InteiroParaCadeia(int inteiro){
+    static char cadeia[tam_max_cadeia];
+    char *indexador = cadeia;
+    int numGrandezaAtual;
+
+    if (inteiro < 0)
+    {
+        *(indexador) = '-';
+        inteiro *= -1;
+        indexador += sizeof(char);
+    }
+
+    for (int numAlgs = numAlgsInteiro(inteiro); numAlgs > 0; numAlgs--)
+    {
+        numGrandezaAtual = inteiro / (exponencial(10, numAlgs - 1));
+        *(indexador) = numGrandezaAtual + 48;
+        inteiro -= numGrandezaAtual * exponencial(10, numAlgs - 1);
+        indexador += sizeof(char);
+    }
+    *(indexador) = '\0';
+    return cadeia;
+}
