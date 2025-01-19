@@ -55,7 +55,7 @@ float cadeiaParaFloat(char* cadeia);
 char* obterSubCadeia(char *cadeia, char separador);
 int checarCharFloat(char c);
 int proximosOuFimNaCadeia(char *cadeia, char *separadores); 
-int proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo);
+char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo);
 
 int main(){
    
@@ -300,4 +300,47 @@ int checarCharFloat(char c) {
         return PONTO;
     else 
         return 0;
+}
+
+// Sumário: busca pela posição em uma cadeia da primeira ocorrência do final e de um ou mais 
+// caracteres de separação
+// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <separadores: caracteres de busca>
+// Returna: <int: índice de posição da ocorrência> 
+int proximosOuFimNaCadeia(char *cadeia, char *separadores){
+    // contadores
+    int i, k;
+
+    // busca a próxima primeira ocorrência de um dos separadores na cadeia de entrada
+    for (i = 1; cadeia[i] != '\0'; i++)
+    {
+        for (k = 0; separadores[k] != '\0'; k++)
+            if (cadeia[i] == separadores[k])
+                goto fim;
+    }
+    
+    // retorna o índice
+    fim: return i;
+}
+
+
+// Sumário: busca em uma cadeia a primeira ocorrência de um ou mais 
+// caracteres de separação em um intervalo, retornando essa ocorrência
+// Parâmetros: <cadeia: cadeia de caracteres de entrada>, <separadores: caracteres de busca> e
+// <intervalo: quantos caracteres contando com o atual devem ser lidos a partir do indexador>
+// Returna: <char: caracter da ocorrência encontrada> 
+char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo){
+    // contadores
+    int i, k;
+
+    // busca a próxima ocorrência de um dos separadores nos <intervalo> primeiros
+    // caracteres
+    for (i = 0; cadeia[i] != '\0' && i < intervalo; i++)
+        for (k = i; separadores[k] != '\0'; k++)
+            if (cadeia[i] == separadores[k])
+                goto fim; // finaliza
+
+    // retorna primeira ocorrência entre os separadores,
+    // o char na posição final do intervalo ou '\0' se chegar
+    //  no final da linha
+    fim: return cadeia[i];
 }
