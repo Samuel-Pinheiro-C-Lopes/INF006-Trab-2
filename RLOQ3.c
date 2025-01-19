@@ -58,9 +58,9 @@ CabecoteListaInt* inicializarListaInt();
 CabecoteListaFloat* inicializarListaFloat();
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
 void adicionarItemListaFloatOrdenado(CabecoteListaFloat *cabecote, float valor);
-int leituraLi(float* listaFloat, char *linha, int *contLinha);
+int leituraLi(CabecoteListaFloat* listaFloat, char *linha, int *contLinha);
 int converterStrPraInt(char *string);
-int* leituraLe(char *linha, int *tamArray);
+int* leituraLe(char *linha, int *tamArray, int *contLinha);
 float cadeiaParaFloat(char* cadeia);
 char* obterSubCadeia(char *cadeia, char separador);
 int checarCharFloat(char c);
@@ -70,7 +70,7 @@ char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo
 int main(){
    
    // testes
-    char teste[10] = "33.34";
+    char teste[10] = "0";
     float res = cadeiaParaFloat(teste);
     printf("\nt: %f\n", res);
    // testes
@@ -235,8 +235,7 @@ int converterStrPraInt(char *string){
 // Parâmetros: <listaFloat: lista a ser preenchida>, <linha: texto de entrada> e 
 // <contLinha: índice atual do texto de entrada
 // Retorno: <int: FIM_LINHA ou TERMINADOR_NULO, quando terminar de ler>
-int leituraLi(float* listaFloat, char *linha, int *contLinha){ 
-    CabecoteListaFloat *lista = inicializarListaFloat();
+int leituraLi(CabecoteListaFloat* listaFloat, char *linha, int *contLinha){ 
 
     while (linha[*contLinha] != '\0'){
         *contLinha += proximosOuFimNaCadeia(&linha[*contLinha], " ");
@@ -245,25 +244,25 @@ int leituraLi(float* listaFloat, char *linha, int *contLinha){
             case ('\0'): goto fim; // fim string
             case ('\n'): return FIM_LINHA; // pula linha
                      // insere                       // converte       // obtém substring
-            default: adicionarItemListaFloatOrdenado(lista, cadeiaParaFloat(obterSubCadeia(&linha[*contLinha + 1], ' ')));
+            default: adicionarItemListaFloatOrdenado(listaFloat, cadeiaParaFloat(obterSubCadeia(&linha[*contLinha + 1], ' ')));
         }
     }
 
     fim: return TERMINADOR_NULO;
 }
 
-int* leituraLe(char *linha, int *tamArray){
+int* leituraLe(char *linha, int *tamArray, int *contLinha){
     //Essa função deve ser chamada por linha lida do arquivo. Ela pega todos os LE's e retorna um array com todos eles na ordem que chegaram.
     // Essa função recebe a linha e o ponteiro de um inteiro como parâmetro. Nesse ponteiro, ficará a informação do tamanho do array.
     int iCont, jCont;
     CabecoteListaInt *lista = inicializarListaInt();
 
-    for(iCont = 3; linha[iCont] != 'L'; iCont++){
+    for(*(contLinha) = 3; linha[*(contLinha)] != 'L'; (*contLinha)++){
         jCont = 0;
         char *novoNumero = malloc(sizeof(char) * tam_max_casas_num);
-        while(linha[iCont] != ' '){
-            novoNumero[jCont] = linha[iCont];
-            iCont++;
+        while(linha[*(contLinha)] != ' '){
+            novoNumero[jCont] = linha[*(contLinha)];
+            *(contLinha) += 1;
             jCont++; 
         }
         adicionarItemListaInt(&lista, converterStrPraInt(novoNumero));
