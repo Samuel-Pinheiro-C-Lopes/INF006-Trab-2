@@ -112,8 +112,7 @@ void lerArquivo(LinhaSaida *saida, FILE *entrada){
     int tamVetor = 0; 
     int i; // contador
 
-    // indexadores do início de LI e LE
-    LI *inicioLI;
+    // indexador do início de LE
     LE *inicioLE;
 
     // vetores para valores ordenados de LI e LE
@@ -136,7 +135,7 @@ void lerArquivo(LinhaSaida *saida, FILE *entrada){
         arrayLI = leituraLi(linha, &tamVetor, &contLinha);
 
         // atribui cada um, já ordenados
-        inicioLI = inicializarLI(arrayLI[0]);
+        inicioLE->li = inicializarLI(arrayLI[0]);
         for (i = 1; i < tamVetor; i++)
             adicionarLi(arrayLI[i], &inicioLE);
 
