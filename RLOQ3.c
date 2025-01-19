@@ -130,7 +130,7 @@ void lerArquivo(LinhaSaida *saida, FILE *entrada){
         // atribui cada um, já ordenados
         inicioLE = inicializarLE(arrayLE[0]);
         for (i = 1; i < tamVetor; i++)
-            adicionarLE(arrayLE[i], inicioLE);
+            adicionarLE(arrayLE[i], &inicioLE);
 
         // LI
         arrayLI = leituraLi(linha, &tamVetor, &contLinha);
@@ -138,7 +138,7 @@ void lerArquivo(LinhaSaida *saida, FILE *entrada){
         // atribui cada um, já ordenados
         inicioLI = inicializarLI(arrayLI[0]);
         for (i = 1; i < tamVetor; i++)
-            adicionarLi(arrayLI[i], inicioLE);
+            adicionarLi(arrayLI[i], &inicioLE);
 
         // SUBSCREVER CADEIA CORRESPONDENTE E ATRIBUIR LINHA DE SAÍDA
         saida->inicioLE = inicioLE;
@@ -732,4 +732,20 @@ int numAlgsFloat(float numero){
     }
 
     return numAlgs;
+}
+
+// Sumário: eleva um determinado número por um expoente
+// Parâmetros: <inteiro: número a ser elevado, base> e <expoente>
+// Retorna: <int: resultado da exponencialização>
+int exponencial(int inteiro, int expoente){
+    int resultado = inteiro;
+    if (expoente == 0)
+        return 1; // todo número ^0 é 1
+    else if (expoente < 0)
+        return -1; // erro
+    else // eleve normalmente
+        for (; expoente > 1; expoente--)
+            resultado *= inteiro;
+
+    return resultado;
 }
