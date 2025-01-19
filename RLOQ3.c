@@ -684,3 +684,19 @@ char* FloatParaCadeia(float numero){
     *(indexador) = '\0';
     return cadeia;
 }
+
+// Sumário: Obtém a quantidade de algarismos presentes em um número
+// inteiro
+// Parâmetros: <inteiro: número cujos algarismos devem ser contabilizados>
+// Retorna: <int: quantidade de algarismos>
+int numAlgsInteiro(int inteiro){
+    static int numAlgs;
+
+    if (inteiro == 0)
+        return 1;
+    else 
+        for (numAlgs = 0; inteiro != 0; numAlgs++)
+            inteiro /= 10;
+
+    return numAlgs;
+}
