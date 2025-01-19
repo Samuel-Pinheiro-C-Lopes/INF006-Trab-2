@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #define tam_max_linha (1000)
 #define tam_max_cadeia (255)
 #define tam_max_casas_num (5)
@@ -18,6 +19,7 @@ typedef struct cabecoteListaFloat CabecoteListaFloat;
 typedef struct itemListaFloat ItemListaFloat;
 
 struct linhaSaida{
+    LinhaSaida *prox;
     LE *inicioLE;
     char linha[tam_max_linha];
 };
@@ -66,7 +68,7 @@ void adicionarLi(float valor, LE **le);
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
 void adicionarItemListaIntOrdenado(CabecoteListaInt *cabecote, int valor);
 void adicionarItemListaFloatOrdenado(CabecoteListaFloat *cabecote, float valor);
-adicionarSaida(LinhaSaida *saida);
+LinhaSaida* adicionarSaida(LinhaSaida *saida);
 // leitura
 int* leituraLe(char *linha, int *tamArray, int *contLinha);
 float* leituraLi(char *linha, int *tamArray, int *contLinha);
@@ -225,6 +227,17 @@ void adicionarLE(int valor, LE **inicio){
     }
     aux->proximo = novoLe;
     novoLe->anterior = aux;
+}
+
+// Sumário: adiciona uma nova linha após a atual, encadeia e retorna
+// ponteiro para a recém criada
+// Parâmetros: <saída: linha de saída a ter outra inserida posteriormente>
+// Retorna: <LinhaSaida *: ponteiro para a nova linha>
+LinhaSaida* adicionarSaida(LinhaSaida *saida){
+    LinhaSaida* novaLinha = (LinhaSaida *) malloc(sizeof(LinhaSaida));
+    novaLinha->prox = NULL;
+    saida->prox = novaLinha;
+    return novaLinha;
 }
 
 // Sumário: inicializa um cabeçote de lista float
@@ -576,4 +589,23 @@ char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo
     // o char na posição final do intervalo ou '\0' se chegar
     //  no final da linha
     fim: return cadeia[i];
+}
+
+// Sumário: Preenche a cadeia alvo com o conteúdo
+// até o fim do conteúdo.
+// Não checa pelo final da cadeia alvo, podendo tentar atribuir memória não alocada
+// para a cadeia
+// Parâmetros: <cadeia: vetor de caracteres alvo a ser preenchido> e <conteudo:
+// vetor de caracteres que deve preencher o alvo>
+// Retorna: <int: quantos caracteres foram preenchidos>
+int preencherCadeia(char *cadeia, char *conteudo){
+    int cont = 0;
+
+    while (*(conteudo) != '\0')
+    {
+        *(cadeia++) = *(conteudo++);
+        cont++;
+    }
+
+    return cont;
 }
