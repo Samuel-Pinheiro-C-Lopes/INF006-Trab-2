@@ -152,8 +152,11 @@ char* toLower(char *palavra){
 }
 
 int checarOrdemAlfabetica(char *palavra1, char *palavra2){
-    // Retorno 1 : Primeira palavra vem primeiro;
-    // Retorno 2 : Segunda palavra vem primeiro;
+    //Retorno 1 : Primeira palavra vem primeiro;
+    //Retorno 2 : Segunda palavra vem primeiro;
+    //Caso as palavras sejam iguais, retorna 2;
+    //Caso as palavras sejam iguais, porém uma delas tem mais caracteres, retorna o resultado para que tiver menos venha primeiro;
+    //Essa função já faz strings auxiliares para comparar as palavras em minúsculo, não sendo necessário tratamento prévio.
     int iCont;
     int tamanhoMaximoCheck = strlen(palavra1) < strlen(palavra2) ? strlen(palavra1) : strlen(palavra2);
     
@@ -171,7 +174,7 @@ int checarOrdemAlfabetica(char *palavra1, char *palavra2){
             return 1;
         }
     }
-    return 1;
+    return strlen(palavra1) < strlen(palavra2) ? 1 : 2;
 
 }
 
