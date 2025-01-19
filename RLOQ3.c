@@ -303,7 +303,8 @@ int* leituraLe(char *linha, int *tamArray, int *contLinha){
             *(contLinha) += 1;
             jCont++; 
         }
-        adicionarItemListaInt(&lista, converterStrPraInt(novoNumero));
+        // adicionarItemListaInt(&lista, converterStrPraInt(novoNumero));
+        adicionarItemListaIntOrdenado(lista, converterStrPraInt(novoNumero));
     }
 
     int *listaInt = malloc(sizeof(int) * lista->quantidadeItens);
@@ -436,8 +437,4 @@ char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo
     // o char na posição final do intervalo ou '\0' se chegar
     //  no final da linha
     fim: return cadeia[i];
-}
-
-void ordenarListaItemInteiro(CabecoteListaInt *cbct){
-    
 }
