@@ -10,11 +10,17 @@
 #define NUMERO (-33)
 #define PONTO (-34)
 
+typedef struct linhaSaida LinhaSaida;
 typedef struct le LE;
 typedef struct li LI;
 typedef struct itemListaInt ItemListaInt;
 typedef struct cabecoteListaFloat CabecoteListaFloat;
 typedef struct itemListaFloat ItemListaFloat;
+
+struct LinhaSaida{
+    LE *inicioLE;
+    char linha[tam_max_linha];
+};
 
 typedef struct li{
     LI *proximo;
@@ -59,7 +65,7 @@ CabecoteListaFloat* inicializarListaFloat();
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
 void adicionarItemListaIntOrdenado(CabecoteListaInt *cabecote, int valor);
 void adicionarItemListaFloatOrdenado(CabecoteListaFloat *cabecote, float valor);
-int leituraLi(CabecoteListaFloat* listaFloat, char *linha, int *contLinha);
+float* leituraLi(char *linha, int *tamArray, int *contLinha);
 int converterStrPraInt(char *string);
 int* leituraLe(char *linha, int *tamArray, int *contLinha);
 float cadeiaParaFloat(char* cadeia);
@@ -273,20 +279,42 @@ int converterStrPraInt(char *string){
 // Parâmetros: <listaFloat: lista a ser preenchida>, <linha: texto de entrada> e 
 // <contLinha: índice atual do texto de entrada
 // Retorno: <int: FIM_LINHA ou TERMINADOR_NULO, quando terminar de ler>
-int leituraLi(CabecoteListaFloat* listaFloat, char *linha, int *contLinha){ 
+float* leituraLi(char *linha, int *tamVetor, int *contLinha){ 
+    // CABEÇOTE
+
+    CabecoteListaFloat* listaFloat = inicializarListaFloat();
+    *(tamVetor) = 0;
 
     while (linha[*contLinha] != '\0'){
         *contLinha += proximosOuFimNaCadeia(&linha[*contLinha], " ");
         switch(proximoCharNaCadeiaIntervalo(&linha[*contLinha], "\n", 1))
         {
-            case ('\0'): goto fim; // fim string
-            case ('\n'): return FIM_LINHA; // pula linha
+            case ('\0'): 
+            case ('\n'): break; // interrompe atribuições
                      // insere                       // converte       // obtém substring
-            default: adicionarItemListaFloatOrdenado(listaFloat, cadeiaParaFloat(obterSubCadeia(&linha[*contLinha + 1], ' ')));
+            default: {
+                adicionarItemListaFloatOrdenado(listaFloat, cadeiaParaFloat(obterSubCadeia(&linha[*contLinha + 1], ' ')));
+                *(tamVetor) += 1;
+            }
         }
     }
 
-    fim: return TERMINADOR_NULO;
+    // VETOR
+
+    float *vetor = (float *) malloc(sizeof(float) * (*(tamVetor)));
+
+    {
+        float *atualVetor = vetor;
+        ItemListaFloat *atualLista = listaFloat->primeiro;
+        while (atualLista != NULL) {
+            *(atualVetor) = atualLista->valor;
+            atualLista = atualLista->proximo;
+            atualVetor += sizeof(float);
+        }
+    }
+
+    free(listaFloat);
+    return vetor;
 }
 
 int* leituraLe(char *linha, int *tamArray, int *contLinha){
