@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define tam_max_linha (1000)
+#define tam_max_casas_num (5)
 
 typedef struct le LE;
 typedef struct li LI;
@@ -34,8 +36,10 @@ void adicionarLi(float valor, LE **le);
 CabecoteListaInt* inicializarListaInt();
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
 int converterStrPraInt(char *string);
+int* leituraLe(char *linha, int *tamArray);
 
 int main(){
+   
     return 1;
 }
 
@@ -138,3 +142,31 @@ int converterStrPraInt(char *string){
     return valor * sinal;
 }
 
+int* leituraLe(char *linha, int *tamArray){
+    //Essa função deve ser chamada por linha lida do arquivo. Ela pega todos os LE's e retorna um array com todos eles na ordem que chegaram.
+    // Essa função recebe a linha e o ponteiro de um inteiro como parâmetro. Nesse ponteiro, ficará a informação do tamanho do array.
+    int iCont, jCont;
+    CabecoteListaInt *lista = inicializarListaInt();
+
+    for(iCont = 3; linha[iCont] != 'L'; iCont++){
+        jCont = 0;
+        char *novoNumero = malloc(sizeof(char) * tam_max_casas_num);
+        while(linha[iCont] != ' '){
+            novoNumero[jCont] = linha[iCont];
+            iCont++;
+            jCont++; 
+        }
+        adicionarItemListaInt(&lista, converterStrPraInt(novoNumero));
+    }
+
+    int *listaInt = malloc(sizeof(int) * lista->quantidadeItens);
+    ItemListaInt *aux = lista->primeiro;
+
+    for(iCont = 0; iCont < lista->quantidadeItens;iCont++){
+        listaInt[iCont] = aux->valor;
+        aux = aux->proximo;
+    }
+
+    *tamArray = lista->quantidadeItens;
+    return listaInt;
+}
