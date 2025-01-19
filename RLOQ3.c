@@ -58,16 +58,20 @@ struct cabecoteListaFloat{
 LE* inicializarLE(int valor);
 LI* inicializarLI(int valor);
 ItemListaFloat* inicializarItemListaFloat(float valor);
-void adicionarLE(int valor, LE **le);
-void adicionarLi(float valor, LE **le);
 CabecoteListaInt* inicializarListaInt();
 CabecoteListaFloat* inicializarListaFloat();
+// adicionar
+void adicionarLE(int valor, LE **le);
+void adicionarLi(float valor, LE **le);
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
 void adicionarItemListaIntOrdenado(CabecoteListaInt *cabecote, int valor);
 void adicionarItemListaFloatOrdenado(CabecoteListaFloat *cabecote, float valor);
-float* leituraLi(char *linha, int *tamArray, int *contLinha);
-int converterStrPraInt(char *string);
+// leitura
 int* leituraLe(char *linha, int *tamArray, int *contLinha);
+float* leituraLi(char *linha, int *tamArray, int *contLinha);
+void lerArquivo(LinhaSaida *saida, FILE *entrada);
+// cadeia
+int converterStrPraInt(char *string);
 float cadeiaParaFloat(char* cadeia);
 char* obterSubCadeia(char *cadeia, char separador);
 int checarCharFloat(char c);
@@ -82,6 +86,53 @@ int main(){
     printf("\nt: %f\n", res);
    // testes
     return 1;
+}
+
+
+// Sumário: Lê todas as listas presentes no arquivo de entrada, atribuindo e 
+// completando a linha de saída com base nisso
+// Parâmetros: <cbct: cabeçote das listas a ser preenchido> e <entrada: arquivo de entrada>
+// Retorna: <void>
+void lerArquivo(LinhaSaida *saida, FILE *entrada){
+    // linha a ser lida
+    static char linha[tam_max_linha];
+
+    int contLinha;
+    int tamVetor = 0; 
+    int i; // contador
+
+    // indexadores do início de LI e LE
+    LI *inicioLI;
+    LE *inicioLE;
+
+    // vetores para valores ordenados de LI e LE
+    float *arrayLI;
+    int *arrayLE;
+
+
+    // enquanto houver linhas a serem lidas no arquivo de entrada
+    while (fgets(linha, tam_max_linha, entrada) != NULL){
+        contLinha = 3;
+        // LE
+        arrayLE = leituraLe(linha, &tamVetor, &contLinha);
+
+        // atribui cada um, já ordenados
+        inicioLE = inicializarLE(arrayLE[0]);
+        for (i = 1; i < tamVetor; i++)
+            adicionarLE(arrayLE[i], inicioLE);
+
+        // LI
+        arrayLI = leituraLi(linha, &tamVetor, &contLinha);
+
+        // atribui cada um, já ordenados
+        inicioLI = inicializarLI(arrayLI[0]);
+        for (i = 1; i < tamVetor; i++)
+            adicionarLi(arrayLI[i], inicioLE);
+
+        // ASSOCIAR LI COM LE
+
+        // SUBSCREVER CADEIA CORRESPONDENTE E ATRIBUIR LINHA DE SAÍDA
+    }
 }
 
 LE* inicializarLE(int valor){
