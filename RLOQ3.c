@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct le LE;
 typedef struct li LI;
@@ -32,9 +33,9 @@ void adicionarLE(int valor, LE **le);
 void adicionarLi(float valor, LE **le);
 CabecoteListaInt* inicializarListaInt();
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
+int converterStrPraInt(char *string);
 
 int main(){
-
     return 1;
 }
 
@@ -110,3 +111,30 @@ void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor){
     aux->proximo = novoItemLista;
     (*cabecote)->quantidadeItens++;
 }
+
+int converterStrPraInt(char *string){
+    int iCont = 0;
+    int qtdCasas, base = 1;
+    int sinal = 1;
+    int valor = 0;
+
+    if(string[0] == '-'){
+        sinal = -1;
+        iCont++;
+    }
+
+    qtdCasas = iCont;
+    while(qtdCasas + 1< strlen(string)){
+        qtdCasas++;
+        base *= 10;
+    }
+
+    while(iCont < strlen(string)){
+        valor += base * (string[iCont] - '0');
+        base /= 10;
+        iCont++;
+    }
+
+    return valor * sinal;
+}
+
