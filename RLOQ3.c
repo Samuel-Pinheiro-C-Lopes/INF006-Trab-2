@@ -30,7 +30,9 @@ typedef struct{
     int quantidadeItens;
 }CabecoteListaInt;
 
+// inicializar
 LE* inicializarLE(int valor);
+LI* inicializarLI(int valor);
 void adicionarLE(int valor, LE **le);
 void adicionarLi(float valor, LE **le);
 CabecoteListaInt* inicializarListaInt();
@@ -50,6 +52,12 @@ LE* inicializarLE(int valor){
     le->proximo = NULL;
     le->li = NULL;
     return le;
+}
+
+LI* inicializarLI(int valor){
+    LI *li = (LI *) malloc(sizeof(LI));
+    li->proximo = NULL;
+    li->valor = valor;
 }
 
 void adicionarLE(int valor, LE **inicio){
