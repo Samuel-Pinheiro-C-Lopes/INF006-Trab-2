@@ -327,11 +327,11 @@ float cadeiaParaFloat(char* cadeia){
     }
 
     // se houver parte fracionária
-    if (checarCharFloat(*(cadeia) == PONTO))
+    if (checarCharFloat(*(cadeia)) == PONTO)
     {
         cadeia += sizeof(char);
         // enquanto o indexador apontar para um número
-        while(checarCharFloat(*(cadeia) == NUMERO)){
+        while(checarCharFloat(*(cadeia)) == NUMERO){
             numero += ((float) (*(cadeia) - 48) / base);
             base *= 10;
             cadeia += sizeof(char);
