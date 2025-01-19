@@ -4,9 +4,14 @@
 #define tam_max_linha (1000)
 #define tam_max_casas_num (5)
 
+#define FIM_LINHA (-21)
+#define TERMINADOR_NULO (-22)
+
 typedef struct le LE;
 typedef struct li LI;
 typedef struct itemListaInt ItemListaInt;
+typedef struct cabecoteListaFloat CabecoteListaFloat;
+typedef struct itemListaFloat ItemListaFloat;
 
 typedef struct li{
     LI *proximo;
@@ -33,12 +38,17 @@ typedef struct{
 // inicializar
 LE* inicializarLE(int valor);
 LI* inicializarLI(int valor);
+ItemListaFloat* inicializarItemListaFloat(float valor);
 void adicionarLE(int valor, LE **le);
 void adicionarLi(float valor, LE **le);
 CabecoteListaInt* inicializarListaInt();
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
+void adicionarItemListaFloatOrdenado(CabecoteListaInt **cabecote, int valor);
+int leituraLi(float* listaFloat, char *linha, int *contLinha);
 int converterStrPraInt(char *string);
 int* leituraLe(char *linha, int *tamArray);
+float cadeiaParaFloat(char* cadeia);
+char* obterSubCadeia(char *cadeia, char separador);
 
 int main(){
    
@@ -148,6 +158,29 @@ int converterStrPraInt(char *string){
     }
 
     return valor * sinal;
+}
+
+// Sumário: Lê o LI de uma entrada de texto, cujos números em ponto flutuante - decimal - 
+// devem ser espaçados em 1 entre si pois navega pelos
+// espaços.
+// Parâmetros: <listaFloat: lista a ser preenchida>, <linha: texto de entrada> e 
+// <contLinha: índice atual do texto de entrada
+// Retorno: <int: FIM_LINHA ou TERMINADOR_NULO, quando terminar de ler>
+int leituraLi(float* listaFloat, char *linha, int *contLinha){ 
+    CabecoteListaFloat *lista = inicializarListaFloat();
+
+    while (linha[*contLinha] != '\0'){
+        *contLinha += proximosOuFimNaCadeia(&linha[*contLinha], " ");
+        switch(proximoCharNaCadeiaIntervalo(&linha[*contLinha], "\n", 1))
+        {
+            case ('\0'): goto fim; // fim string
+            case ('\n'): return FIM_LINHA; // pula linha
+                     // insere                       // converte       // obtém substring
+            default: adicionarItemListaFloatOrdenado(&lista, cadeiaParaFloat(obterSubCadeia(&linha[*contLinha + 1], ' ')));
+        }
+    }
+
+    fim: return TERMINADOR_NULO;
 }
 
 int* leituraLe(char *linha, int *tamArray){
