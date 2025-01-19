@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define tam_max_linha (1000)
+#define tam_max_cadeia (255)
 #define tam_max_casas_num (5)
 
 #define FIM_LINHA (-21)
@@ -210,4 +211,25 @@ int* leituraLe(char *linha, int *tamArray){
 
     *tamArray = lista->quantidadeItens;
     return listaInt;
+}
+
+
+// Sumário: obtém uma cadeia de caracteres como entrada tal como um separador, retorna
+// endereço para uma subcadeia contendo o início até o separador - sem o incluir
+// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <separador: caracter de separação>
+// Retorna: <char *: endereço da variável estática "subcadeia", contendo a subcadeia lida>
+char * obterSubCadeia(char *cadeia, char separador){
+    // subcadeia
+    static char subcadeia[tam_max_cadeia];
+    int i; // contador
+
+    // copia até sentinelas - tamanho máximo, separador e fim de linha
+    for (i = 0; cadeia[i] != separador && cadeia[i] != '\0' && cadeia[i] != '\n' && i < tam_max_linha - 1; i += sizeof(char))
+        subcadeia[i] = cadeia[i];
+
+    // final da subcadeia
+    subcadeia[i] = '\0';
+
+    // endereço da subcadeia
+    return subcadeia;
 }
