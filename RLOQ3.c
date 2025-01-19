@@ -17,7 +17,7 @@ typedef struct itemListaInt ItemListaInt;
 typedef struct cabecoteListaFloat CabecoteListaFloat;
 typedef struct itemListaFloat ItemListaFloat;
 
-struct LinhaSaida{
+struct linhaSaida{
     LE *inicioLE;
     char linha[tam_max_linha];
 };
@@ -66,6 +66,7 @@ void adicionarLi(float valor, LE **le);
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
 void adicionarItemListaIntOrdenado(CabecoteListaInt *cabecote, int valor);
 void adicionarItemListaFloatOrdenado(CabecoteListaFloat *cabecote, float valor);
+adicionarSaida(LinhaSaida *saida);
 // leitura
 int* leituraLe(char *linha, int *tamArray, int *contLinha);
 float* leituraLi(char *linha, int *tamArray, int *contLinha);
@@ -77,6 +78,14 @@ char* obterSubCadeia(char *cadeia, char separador);
 int checarCharFloat(char c);
 int proximosOuFimNaCadeia(char *cadeia, char *separadores); 
 char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo);
+char* InteiroParaCadeia(int inteiro);
+char* FloatParaCadeia(float numero);
+int preencherCadeia(char *cadeia, char *conteudo);
+void atribuirCadeiaSaida(LinhaSaida *saida);
+// matemática
+int exponencial(int inteiro, int expoente);
+int numAlgsInteiro(int inteiro);
+int numAlgsFloat(int inteiro);
 
 int main(){
    
@@ -129,10 +138,61 @@ void lerArquivo(LinhaSaida *saida, FILE *entrada){
         for (i = 1; i < tamVetor; i++)
             adicionarLi(arrayLI[i], inicioLE);
 
-        // ASSOCIAR LI COM LE
-
         // SUBSCREVER CADEIA CORRESPONDENTE E ATRIBUIR LINHA DE SAÍDA
+        saida->inicioLE = inicioLE;
+        atribuirCadeiaSaida(saida);
+        saida = adicionarSaida(saida);
     }
+}
+
+// Sumário: recebe uma linha de saída com LE atribuído e constroí a
+// cadeia para o arquivo de saído com base nele
+// Parâmetros: <saida: estrutura que representará a linha de saída>
+// Retorna: <void>
+void atribuirCadeiaSaida(LinhaSaida *saida){
+    // indexadores de LE e LI
+    LE *atualLE;
+    LI *atualLI;
+    
+    // indexador da cadeia de saída
+    char *indexador = saida->linha;
+
+    // início de LE
+    *(indexador++) = '[';
+    // para cada LE
+    for (atualLE = saida->inicioLE; atualLE != NULL; atualLE = atualLE->proximo)
+    {
+        // valor de LE 
+        indexador += preencherCadeia(indexador, InteiroParaCadeia(atualLE->valor));
+
+        // LI presente em LE
+        *(indexador++) = '(';
+        atualLI = atualLE->li;
+        if (atualLI != NULL)
+        {
+            do {
+                // valor do LI
+                indexador += preencherCadeia(indexador, FloatParaCadeia(atualLI->valor));
+                atualLI = atualLI->proximo;
+                // se ainda houver outro
+                if (atualLI != atualLE->li)
+                    indexador += preencherCadeia(indexador, "->");
+            } while (atualLI != atualLE->li);
+        }
+        // final dos LI de LE
+        *(indexador++) = ')';
+
+        // se houver outro LE
+        if (atualLE->proximo != NULL)
+            indexador += preencherCadeia(indexador, "->");
+    }
+
+    // final de LE
+    *(indexador++) = ']';
+
+    // fim da linha
+    *(indexador++) = '\n';
+    *(indexador++) = '\0';
 }
 
 LE* inicializarLE(int valor){
