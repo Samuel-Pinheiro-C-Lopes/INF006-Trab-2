@@ -124,10 +124,10 @@ CbctListas* novoCbctListas(CbctListas *cbctInicio){
     return novoCbct;
 }
 
-// Summary: insere uma lista a uma lista de listas na sua posição certa, considerando a soma dos
+// Sumário: insere uma lista a uma lista de listas na sua posição certa, considerando a soma dos
 // elementos dela
-// Parameters: <cbct: cabeçote da lista de listas> e <novaLista: nova lista a ser inserida>
-// Returns: <void>
+// Parâmetros: <cbct: cabeçote da lista de listas> e <novaLista: nova lista a ser inserida>
+// Retorna: <void>
 void inserirListaOrdenada(CbctListas *cbct, Lista *novaLista){
     // se a novaLista tiver a soma inferior às outras
     if (cbct->inicio == NULL || cbct->inicio->soma > novaLista->soma){
@@ -158,8 +158,8 @@ void inserirListaOrdenada(CbctListas *cbct, Lista *novaLista){
     }
 }
 
-// Summary: adiciona um item de lista a uma lista em sua posição correta, ordenada crescentemente
-// Parameters: <lista: cabeçote da lista cujo elemento deve ser inserido> e <novoValor: chave do
+// Sumário: adiciona um item de lista a uma lista em sua posição correta, ordenada crescentemente
+// Parâmetros: <lista: cabeçote da lista cujo elemento deve ser inserido> e <novoValor: chave do
 // novo elemento da lista>
 // retorno: <void>
 void inserirItemListaOrdenado(Lista *lista, int novoValor){
@@ -192,9 +192,9 @@ void inserirItemListaOrdenado(Lista *lista, int novoValor){
     }
 }
 
-// Summary: Lê todas as listas presentes no arquivo de entrada, atribuindo-as ao cabeçote
-// Parameters: <cbct: cabeçote das listas a ser preenchido> e <entrada: arquivo de entrada>
-// Returns: <void>
+// Sumário: Lê todas as listas presentes no arquivo de entrada, atribuindo-as ao cabeçote
+// Parâmetros: <cbct: cabeçote das listas a ser preenchido> e <entrada: arquivo de entrada>
+// Retorna: <void>
 void lerTodasListas(CbctListas* cbctAtual, FILE *entrada){
     // linha a ser lida
     static char linha[tam_max_linha];
@@ -312,10 +312,10 @@ char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo
     fim: return cadeia[i];
 }
 
-// Summary: obtém uma cadeia de caracteres como entrada tal como um separador, retorna
+// Sumário: obtém uma cadeia de caracteres como entrada tal como um separador, retorna
 // endereço para uma subcadeia contendo o início até o separador - sem o incluir
-// Parameters: <cadeia: cadeia de caracteres de entrada> e <separador: caracter de separação>
-// Returns: <char *: endereço da variável estática "subcadeia", contendo a subcadeia lida>
+// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <separador: caracter de separação>
+// Retorna: <char *: endereço da variável estática "subcadeia", contendo a subcadeia lida>
 char * obterSubCadeia(char *cadeia, char separador){
     // subcadeia
     static char subcadeia[tam_max_cadeia];
@@ -332,9 +332,9 @@ char * obterSubCadeia(char *cadeia, char separador){
     return subcadeia;
 }
 
-// Summary: converte um texto para seu equivalente numérico inteiro
-// Parameters: <cadeia: indexador da cadeia a ser convertida>
-// Returns: <int: numero resultante>
+// Sumário: converte um texto para seu equivalente numérico inteiro
+// Parâmetros: <cadeia: indexador da cadeia a ser convertida>
+// Retorna: <int: numero resultante>
 int cadeiaParaInteiro(char* cadeia){
     // propriedades
     int inteiro = 0;
@@ -368,6 +368,12 @@ int checarCharInteiro(char c){
         return 0;
 }
 
+// Sumário: Versão segura de preencherCadeia, vai preenchendo a cadeia alvo com o conteúdo
+// até que um dos indexadores aponte para um terminador nulo.
+// Não funciona para cadeia de caracteres não inicializada
+// Parâmetros: <cadeia: vetor de caracteres alvo a ser preenchido> e <conteudo:
+// vetor de caracteres que deve preencher o alvo>
+// Retorna: <int: quantos caracteres foram preenchidos>
 int preencherCadeiaInicializada(char *cadeia, char *conteudo){
     int cont = 0;
 
@@ -380,6 +386,13 @@ int preencherCadeiaInicializada(char *cadeia, char *conteudo){
     return cont;
 }
 
+// Sumário: Preenche a cadeia alvo com o conteúdo
+// até o fim do conteúdo.
+// Não checa pelo final da cadeia alvo, podendo tentar atribuir memória não alocada
+// para a cadeia
+// Parâmetros: <cadeia: vetor de caracteres alvo a ser preenchido> e <conteudo:
+// vetor de caracteres que deve preencher o alvo>
+// Retorna: <int: quantos caracteres foram preenchidos>
 int preencherCadeia(char *cadeia, char *conteudo){
     int cont = 0;
 
@@ -392,6 +405,10 @@ int preencherCadeia(char *cadeia, char *conteudo){
     return cont;
 }
 
+// Sumário: Obtém a quantidade de algarismos presentes em um número
+// inteiro
+// Parâmetros: <inteiro: número cujos algarismos devem ser contabilizados>
+// Retorna: <int: quantidade de algarismos>
 int numAlgsInteiro(int inteiro){
     static int numAlgs;
 
@@ -404,6 +421,9 @@ int numAlgsInteiro(int inteiro){
     return numAlgs;
 }
 
+// Sumário: eleva um determinado número por um expoente
+// Parâmetros: <inteiro: número a ser elevado, base> e <expoente>
+// Retorna: <int: resultado da exponencialização>
 int exponencial(int inteiro, int expoente){
     int resultado = inteiro;
     if (expoente == 0)
@@ -417,6 +437,10 @@ int exponencial(int inteiro, int expoente){
     return resultado;
 }
 
+// Sumário: Converte um inteiro para uma cadeia de caracteres
+// com seu conteúdo
+// Parâmetros: <inteiro: número inteiro a ser lido>
+// Retorna: <char *: ponteiro para a cadeia resultante>
 char* InteiroParaCadeia(int inteiro){
     static char cadeia[tam_max_cadeia];
     char *indexador = cadeia;
@@ -440,17 +464,24 @@ char* InteiroParaCadeia(int inteiro){
     return cadeia;
 }
 
+// Sumário: Atribui o campo de cadeia do cabeçote de listas 
+// com base nas listas presentes
+// Parâmetros: <cbct: cabeçote a ter seu campo atribuído>
+// Retorna: <void>
 void atribuirCadeiaCbct(CbctListas *cbct){
     static char start[6] = "start"; 
     Lista *listaAtual;
     ItemLista *itemAtual;
     char *indexador = cbct->cadeia;
 
+    // para cada lista no cabeçote
     for (listaAtual = cbct->inicio; listaAtual != NULL; listaAtual = listaAtual->prox)
     {
+        // "start: "
         indexador += sizeof(char) * preencherCadeia(indexador, start);
         *(indexador++) = ' ';
 
+        // para cada valor "<valor> "
         for (itemAtual = listaAtual->inicio; itemAtual != NULL; itemAtual = itemAtual->prox)
         {
             indexador += sizeof(char) * preencherCadeia(indexador, InteiroParaCadeia(itemAtual->valor));
@@ -458,6 +489,7 @@ void atribuirCadeiaCbct(CbctListas *cbct){
         }
     }
 
+    // termina a cadeia
     *(indexador++) = '\n';
     *(indexador++) = '\0';
 }
