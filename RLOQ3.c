@@ -636,3 +636,51 @@ char* InteiroParaCadeia(int inteiro){
     *(indexador) = '\0';
     return cadeia;
 }
+
+
+// Sumário: Converte um número ponto flutuante para uma cadeia de caracteres
+// com seu conteúdo
+// Parâmetros: <float: número inteiro a ser lido>
+// Retorna: <char *: ponteiro para a cadeia resultante>
+char* FloatParaCadeia(float numero){
+    static char cadeia[tam_max_cadeia];
+    char *indexador = cadeia;
+    int numGrandezaAtual;
+    int inteiro = (int) numero; // forma 'truncated'
+    float decimal;
+
+    // escrever parte > 0
+    if (inteiro < 0)
+    {
+        *(indexador) = '-';
+        inteiro *= -1;
+        indexador += sizeof(char);
+    }
+
+    for (int numAlgs = numAlgsInteiro(inteiro); numAlgs > 0; numAlgs--)
+    {
+        numGrandezaAtual = inteiro / (exponencial(10, numAlgs - 1));
+        *(indexador) = numGrandezaAtual + 48;
+        inteiro -= numGrandezaAtual * exponencial(10, numAlgs - 1);
+        indexador += sizeof(char);
+    }
+
+    // escrever parte < 0
+    decimal = numero - inteiro;
+    // se houver
+    if (decimal > 0)
+    {
+        *(indexador++) = '.';
+
+        do {
+            decimal *= 10; // primeiro algarismo à diretira da vírgula
+            inteiro = (int) decimal; // fixa
+            *(indexador++) = inteiro - 48; // indexa
+            decimal = numero - inteiro; // progride para os remanescentes
+        } while (inteiro > 0);
+    }
+
+    // final da cadeia
+    *(indexador) = '\0';
+    return cadeia;
+}
