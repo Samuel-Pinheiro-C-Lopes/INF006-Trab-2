@@ -33,10 +33,20 @@ typedef struct itemListaInt{
     ItemListaInt *proximo;
 }ItemListaInt;
 
+struct itemListaFloat{
+    float valor;
+    ItemListaFloat *proximo;
+};
+
 typedef struct{
     ItemListaInt *primeiro;
     int quantidadeItens;
 }CabecoteListaInt;
+
+struct cabecoteListaFloat{
+    ItemListaFloat *primeiro;
+    int quantidadeItens;
+};
 
 // inicializar
 LE* inicializarLE(int valor);
@@ -47,7 +57,7 @@ void adicionarLi(float valor, LE **le);
 CabecoteListaInt* inicializarListaInt();
 CabecoteListaFloat* inicializarListaFloat();
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
-void adicionarItemListaFloatOrdenado(CabecoteListaFloat **cabecote, int valor);
+void adicionarItemListaFloatOrdenado(CabecoteListaFloat *cabecote, float valor);
 int leituraLi(float* listaFloat, char *linha, int *contLinha);
 int converterStrPraInt(char *string);
 int* leituraLe(char *linha, int *tamArray);
@@ -97,6 +107,52 @@ void adicionarLE(int valor, LE **inicio){
     }
     aux->proximo = novoLe;
     novoLe->anterior = aux;
+}
+
+// Sumário: inicializa um cabeçote de lista float
+// Parâmetros: <void>
+// Retorna: <CabecoteListaFloat*: ponteiro do novo cabeçote>
+CabecoteListaFloat* inicializarListaFloat(){
+    CabecoteListaFloat *novoCbct = (CabecoteListaFloat *) malloc(sizeof(CabecoteListaFloat));
+    novoCbct->primeiro = NULL;
+    novoCbct->quantidadeItens = 0;
+    return novoCbct;
+}
+
+// Sumário: inicializa um item de lista float com base um uma chave 
+// Parâmetros: <valor: chave do novo item a ser inicializado>
+// Retorna: <ItemListaFloat*: ponteiro do novo item da lista>
+ItemListaFloat* inicializarItemListaFloat(float valor){
+    ItemListaFloat *novoItem = (ItemListaFloat *) malloc(sizeof(ItemListaFloat));
+    novoItem->proximo = NULL;
+    novoItem->valor = valor;
+    return novoItem;
+}
+
+// Sumário: insere um item de lista float em sua posição correta - crescente
+// Parâmetros: <cabecote: cabecote da lista a ser inserida> e <valor: chave do novo item
+// a ser inserido>
+// Retorna: <void>
+void adicionarItemListaFloatOrdenado(CabecoteListaFloat *cabecote, float valor){
+    ItemListaFloat *novoItem = inicializarItemListaFloat(valor);
+    ItemListaFloat *atual;
+
+    // atribuir logo no início
+    if (cabecote->primeiro == NULL || cabecote->primeiro->valor > novoItem->valor){
+        novoItem->proximo = cabecote->primeiro;
+        cabecote->primeiro = novoItem;
+    }
+    // meio ou final
+    else{
+        atual = cabecote->primeiro;
+        // encontra posição correta
+        while (atual->proximo != NULL && atual->proximo->valor < novoItem->valor)
+            atual = atual->proximo;
+
+        // insere
+        novoItem->proximo = atual->proximo;
+        atual->proximo = novoItem;
+    }
 }
 
 void adicionarLi(float valor, LE **le){
@@ -189,7 +245,7 @@ int leituraLi(float* listaFloat, char *linha, int *contLinha){
             case ('\0'): goto fim; // fim string
             case ('\n'): return FIM_LINHA; // pula linha
                      // insere                       // converte       // obtém substring
-            default: adicionarItemListaFloatOrdenado(&lista, cadeiaParaFloat(obterSubCadeia(&linha[*contLinha + 1], ' ')));
+            default: adicionarItemListaFloatOrdenado(lista, cadeiaParaFloat(obterSubCadeia(&linha[*contLinha + 1], ' ')));
         }
     }
 
