@@ -87,7 +87,7 @@ void atribuirCadeiaSaida(LinhaSaida *saida);
 // matemática
 int exponencial(int inteiro, int expoente);
 int numAlgsInteiro(int inteiro);
-int numAlgsFloat(int inteiro);
+int numAlgsFloat(float numero);
 
 int main(){
    
@@ -677,7 +677,7 @@ char* FloatParaCadeia(float numero){
             inteiro = (int) decimal; // fixa
             *(indexador++) = inteiro - 48; // indexa
             decimal = numero - inteiro; // progride para os remanescentes
-        } while (inteiro > 0);
+        } while (inteiro > 0 || ((int) (decimal * 10)) > 0);
     }
 
     // final da cadeia
@@ -697,6 +697,39 @@ int numAlgsInteiro(int inteiro){
     else 
         for (numAlgs = 0; inteiro != 0; numAlgs++)
             inteiro /= 10;
+
+    return numAlgs;
+}
+
+// Sumário: Obtém a quantidade de algarismos presentes em um número
+// inteiro
+// Parâmetros: <inteiro: número cujos algarismos devem ser contabilizados>
+// Retorna: <int: quantidade de algarismos>
+int numAlgsFloat(float numero){
+    static int numAlgs;
+    float decimal;
+
+    // parte >= 1
+    int inteiro = (int) numero; // truncate
+
+    if (inteiro == 0)
+        return numAlgs = 1;
+    else 
+        for (numAlgs = 0; inteiro != 0; numAlgs++)
+            inteiro /= 10;
+
+
+    // parte < 1
+    decimal = numero - inteiro;
+    // se houver
+    if (decimal > 0)
+    {
+        do {
+            decimal *= 10; // primeiro algarismo à diretira da vírgula
+            decimal = numero - inteiro; // progride para os remanescentes
+            numAlgs++;
+        } while (inteiro > 0 || ((int) (decimal * 10)) > 0);
+    }
 
     return numAlgs;
 }
