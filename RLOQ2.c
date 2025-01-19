@@ -33,12 +33,19 @@ int tirarItemPilha(Pilha **pilha, char *apagado);
 Fila* iniciarFila();
 void inserirItemFila(Fila **fila, char *valor);
 int tirarItemFila(Fila **fila, char *apagado);
-void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila);
+void lerLinha(char *linha, FILE *entrada, FILE *saida);
 char* toLower(char *palavra);
 int checarOrdemAlfabetica(char *palavra1, char *palavra2);
 
 int main(){
-    
+    FILE *entrada = fopen("L1Q1.in", "r");
+    FILE *saida = fopen("L1Q1.out", "w");
+    char *linha = malloc(sizeof(char) * tam_max_linha);
+
+    lerLinha(linha, entrada, saida);
+
+    fclose(entrada);
+    fclose(saida);
     return 1;
 }
 
@@ -168,11 +175,19 @@ int checarOrdemAlfabetica(char *palavra1, char *palavra2){
 
 }
 
-void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila) {
+void lerLinha(char *linha, FILE *entrada, FILE *saida) {
+    //Essa função receber os arquivos de entrada, saída e a linha como parâmetro, ou seja, basta alocar a memória deles;
+    //Ela intera sobre as linhas do arquivo de entrada e, para cada uma, gera uma pilha e uma fila que serão preenchidas pelos dados advindos dela;
+    //Dentro do terceiro while, é separado um nome de forma isolada, então é nele (mais específico dentro do if) que deve ser feitas as 
+        //operções de push e pop da pilha e lista dentro da linha;
+    //Ao sair do segundo while, a pilha estará pronta para ser printada;
+    //É necessário a escrita dentro dessa função a cada interação da linha, pois as estruturas de dados estão de escopo por linha;
     int iCont, jCont;
     char *novoNome = malloc(sizeof(char) * tam_max_nome);
 
     while (fgets(linha, tam_max_linha, entrada) != NULL) {
+        Pilha *pilha = iniciarPilha();
+        Fila *fila = iniciarFila();
         iCont = 0;
 
         while (linha[iCont] != '\n' && linha[iCont] != '\0') {
