@@ -57,7 +57,7 @@ int checarCharInteiro(char c);
 // navegação cadeia
 int proximosNaCadeia(char *cadeia, char* separadores); 
 int proximosOuFimNaCadeia(char *cadeia, char *separadores); 
-int proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo);
+char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo);
 // math
 int exponencial(int inteiro, int expoente);
 int numAlgsInteiro(int inteiro);
@@ -289,7 +289,13 @@ int proximosOuFimNaCadeia(char *cadeia, char *separadores){
     fim: return i;
 }
 
-int proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo){
+
+// Sumário: busca em uma cadeia a primeira ocorrência de um ou mais 
+// caracteres de separação em um intervalo, retornando essa ocorrência
+// Parâmetros: <cadeia: cadeia de caracteres de entrada>, <separadores: caracteres de busca> e
+// <intervalo: quantos caracteres contando com o atual devem ser lidos a partir do indexador>
+// Returna: <char: caracter da ocorrência encontrada> 
+char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo){
     // contadores
     int i, k;
 
@@ -455,34 +461,3 @@ void atribuirCadeiaCbct(CbctListas *cbct){
     *(indexador++) = '\n';
     *(indexador++) = '\0';
 }
-
-
-/*
-void lerLinha(char *linha, FILE *entrada, FILE *saida, Pilha **pilha, Fila **fila) {
-    int iCont, jCont;
-    char *novoNome = malloc(sizeof(char) * tam_max_nome);
-
-    while (fgets(linha, tam_max_linha, entrada) != NULL) {
-        iCont = 0;
-
-        while (linha[iCont] != '\n' && linha[iCont] != '\0') {
-            jCont = 0;
-
-            while (linha[iCont] != ' ' && linha[iCont] != '\n' && linha[iCont] != '\0') {
-                novoNome[jCont] = linha[iCont];
-                iCont++;
-                jCont++;
-            }
-
-            if (jCont > 0) {
-                novoNome[jCont] = '\0';
-                //O nome já estará pronto para ser adicionado na pilha. Aqui deverá ser feita as validações.
-            }
-
-            iCont++;
-        }
-    }
-
-    free(novoNome);
-}
-*/
