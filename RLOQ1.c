@@ -47,6 +47,8 @@ void atribuirCadeiaCbct(CbctListas *cbct);
 // leitura
 void lerTodasListas(CbctListas* cbct, FILE *entrada);
 int lerLista(Lista* novaLista, char entrada[], int* countLinha);
+// escrita
+void escreverLista(CbctListas* cbct, FILE *saida);
 // utilidades cadeia
 char* obterSubCadeia(char *cadeia, char separador);
 int preencherCadeiaInicializada(char *cadeia, char *conteudo);
@@ -70,6 +72,7 @@ int main(){
 
     // arquivo de testes
     FILE *entrada = fopen("L1Q1.in" ,"r");
+    FILE *saida = fopen("L1Q1.out", "w");
 
     // execução de teste
     if (entrada == NULL) 
@@ -80,9 +83,9 @@ int main(){
     // leitura de teste
     // imprime no terminal da forma com que o arquivo de saída se assemelha, 
     // basta adaptar para escrever em arquivo
-    for (CbctListas *cbctAtual = cbctInicio; cbctAtual != NULL; cbctAtual = cbctAtual->prox)
-        printf("%s\n", cbctAtual->cadeia);
-
+    escreverLista(cbctInicio, saida);
+    fclose(entrada);
+    fclose(saida);
     return 1;
 }
 
@@ -490,6 +493,17 @@ void atribuirCadeiaCbct(CbctListas *cbct){
     }
 
     // termina a cadeia
-    *(indexador++) = '\n';
     *(indexador++) = '\0';
+}
+
+void escreverLista(CbctListas* cbct, FILE *saida){
+    CbctListas *aux = cbct;
+
+    while(aux != NULL){
+        fprintf(saida, "%s", aux->cadeia);
+        aux = aux->prox;
+        if(aux != NULL){
+            fprintf(saida, "\n");
+        }
+    }
 }
