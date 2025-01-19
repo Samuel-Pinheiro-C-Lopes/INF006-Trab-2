@@ -129,6 +129,16 @@ ItemListaFloat* inicializarItemListaFloat(float valor){
     return novoItem;
 }
 
+// Sumário: inicializa um item de lista inteiro com base em uma chave
+// Parâmetros: <valor: chave do novo item a ser inicializado>
+// Retorna: <ItemListaInt*: ponteiro do novo item da lista>
+ItemListaInt* inicializarItemListaInt(int valor){
+    ItemListaInt *novoItem = (ItemListaInt *) malloc(sizeof(ItemListaInt));
+    novoItem->proximo = NULL;
+    novoItem->valor = valor;
+    return novoItem;
+}
+
 // Sumário: insere um item de lista float em sua posição correta - crescente
 // Parâmetros: <cabecote: cabecote da lista a ser inserida> e <valor: chave do novo item
 // a ser inserido>
@@ -398,4 +408,8 @@ char proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo
     // o char na posição final do intervalo ou '\0' se chegar
     //  no final da linha
     fim: return cadeia[i];
+}
+
+void ordenarListaItemInteiro(CabecoteListaInt *cbct){
+    
 }
