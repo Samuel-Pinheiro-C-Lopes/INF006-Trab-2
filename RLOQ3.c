@@ -57,6 +57,7 @@ void adicionarLi(float valor, LE **le);
 CabecoteListaInt* inicializarListaInt();
 CabecoteListaFloat* inicializarListaFloat();
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
+void adicionarItemListaIntOrdenado(CabecoteListaInt *cabecote, int valor);
 void adicionarItemListaFloatOrdenado(CabecoteListaFloat *cabecote, float valor);
 int leituraLi(CabecoteListaFloat* listaFloat, char *linha, int *contLinha);
 int converterStrPraInt(char *string);
@@ -164,6 +165,33 @@ void adicionarItemListaFloatOrdenado(CabecoteListaFloat *cabecote, float valor){
         atual->proximo = novoItem;
     }
 }
+
+// Sumário: insere um item de lista int em sua posição correta - crescente
+// Parâmetros: <cabecote: cabecote da lista a ser inserida> e <valor: chave do novo item
+// a ser inserido>
+// Retorna: <void>
+void adicionarItemListaIntOrdenado(CabecoteListaInt *cabecote, int valor){
+    ItemListaInt *novoItem = inicializarItemListaInt(valor);
+    ItemListaInt *atual;
+
+    // atribuir logo no início
+    if (cabecote->primeiro == NULL || cabecote->primeiro->valor > novoItem->valor){
+        novoItem->proximo = cabecote->primeiro;
+        cabecote->primeiro = novoItem;
+    }
+    // meio ou final
+    else{
+        atual = cabecote->primeiro;
+        // encontra posição correta
+        while (atual->proximo != NULL && atual->proximo->valor < novoItem->valor)
+            atual = atual->proximo;
+
+        // insere
+        novoItem->proximo = atual->proximo;
+        atual->proximo = novoItem;
+    }
+}
+
 
 void adicionarLi(float valor, LE **le){
     //Essa função funcionará usada inserindo os valores já ordenado anteriormente
