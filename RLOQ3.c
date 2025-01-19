@@ -7,6 +7,8 @@
 
 #define FIM_LINHA (-21)
 #define TERMINADOR_NULO (-22)
+#define NUMERO (-33)
+#define PONTO (-34)
 
 typedef struct le LE;
 typedef struct li LI;
@@ -43,16 +45,25 @@ ItemListaFloat* inicializarItemListaFloat(float valor);
 void adicionarLE(int valor, LE **le);
 void adicionarLi(float valor, LE **le);
 CabecoteListaInt* inicializarListaInt();
+CabecoteListaFloat* inicializarListaFloat();
 void adicionarItemListaInt(CabecoteListaInt **cabecote, int valor);
-void adicionarItemListaFloatOrdenado(CabecoteListaInt **cabecote, int valor);
+void adicionarItemListaFloatOrdenado(CabecoteListaFloat **cabecote, int valor);
 int leituraLi(float* listaFloat, char *linha, int *contLinha);
 int converterStrPraInt(char *string);
 int* leituraLe(char *linha, int *tamArray);
 float cadeiaParaFloat(char* cadeia);
 char* obterSubCadeia(char *cadeia, char separador);
+int checarCharFloat(char c);
+int proximosOuFimNaCadeia(char *cadeia, char *separadores); 
+int proximoCharNaCadeiaIntervalo(char *cadeia, char *separadores, int intervalo);
 
 int main(){
    
+   // testes
+    char teste[10] = "33.34";
+    float res = cadeiaParaFloat(teste);
+    printf("\nt: %f\n", res);
+   // testes
     return 1;
 }
 
@@ -69,6 +80,7 @@ LI* inicializarLI(int valor){
     LI *li = (LI *) malloc(sizeof(LI));
     li->proximo = NULL;
     li->valor = valor;
+    return li;
 }
 
 void adicionarLE(int valor, LE **inicio){
@@ -232,4 +244,60 @@ char * obterSubCadeia(char *cadeia, char separador){
 
     // endereço da subcadeia
     return subcadeia;
+}
+
+
+// Sumário: converte um texto para seu equivalente numérico em ponto flutuante
+// Parâmetros: <cadeia: indexador da cadeia a ser convertida>
+// Returns: <float: decimal resultante>
+float cadeiaParaFloat(char* cadeia){
+    // propriedades
+    float numero = (float) 0;
+    int negativo = 0;
+    int base = 10;
+
+    // se for negativo
+    if (*cadeia == '-')
+    {
+        negativo = 1; 
+        cadeia += sizeof(char);
+    }
+
+    // enquanto  não encontrar o final da linha ou ponto decimal
+    while (checarCharFloat(*(cadeia)) == NUMERO){
+        numero *= (float) 10; // incrementa o número de algarismos e ordem de grandeza
+        numero += (float) *(cadeia) - 48;  // atribui o novo algarismo em sua casa atual
+        cadeia += sizeof(char); // incrementa o indexador
+    }
+
+    // se houver parte fracionária
+    if (checarCharFloat(*(cadeia) == PONTO))
+    {
+        cadeia += sizeof(char);
+        // enquanto o indexador apontar para um número
+        while(checarCharFloat(*(cadeia) == NUMERO)){
+            numero += ((float) (*(cadeia) - 48) / base);
+            base *= 10;
+            cadeia += sizeof(char);
+        }
+    }
+
+    // sinal negativo
+    if (negativo)
+        numero *= -1;
+
+    return numero; // resultado
+}
+
+// Sumário: checa se o caracter corresponde a algum 
+// de interesse para avaliação de ponto flutuante - número ou ponto
+// Parâmetros: <c: caractere a ser avaliado>
+// Retorno: <int: resultado, se é NUMERO, PONTO ou 0 caso seja inválido>
+int checarCharFloat(char c) {
+    if (c > 47 && c < 58)
+        return NUMERO;
+    else if (c == '.')
+        return PONTO;
+    else 
+        return 0;
 }
