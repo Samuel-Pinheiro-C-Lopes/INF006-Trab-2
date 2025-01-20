@@ -111,7 +111,6 @@ void inserirItemFila(Fila **fila, char *valor) {
     }
 }
 
-// Função para converter caracteres especiais (acentuados) para sem acento
 char converterEspecial(char *cadeia) {
     static const char *tabelaLexica[2][42] = {
         { "á", "à", "â", "ã", "é", "è", "ê", "ẽ", "í", "ì", "î", "ĩ", 
@@ -125,19 +124,16 @@ char converterEspecial(char *cadeia) {
     };
 
     int i, j;
-    // Verifica se o caractere tem acento ou é uma letra especial
     for (i = 0; i < 42; i++) {
         for (j = 0; j < strlen(tabelaLexica[0][i]); j++) {
             if (cadeia[0] == tabelaLexica[0][i][j]) {
-                // Se encontrou a correspondência, retorna o caractere sem acento
                 return tabelaLexica[1][i][0];
             }
         }
     }
-    return cadeia[0]; // Se não for acentuado, retorna o próprio caractere
+    return cadeia[0];
 }
 
-// Função para remover acentos de uma palavra
 void removerAcentos(char *palavra) {
     int i;
     for (i = 0; palavra[i] != '\0'; i++) {
@@ -145,20 +141,16 @@ void removerAcentos(char *palavra) {
     }
 }
 
-// Função para comparar duas palavras, ignorando acentos
 int checarOrdemAlfabetica(char *palavra1, char *palavra2) {
-    // Faz cópias das palavras para não modificar os valores originais
     char palavra1SemAcento[strlen(palavra1) + 1];
     char palavra2SemAcento[strlen(palavra2) + 1];
     
     strcpy(palavra1SemAcento, palavra1);
     strcpy(palavra2SemAcento, palavra2);
 
-    // Remove os acentos das cópias
     removerAcentos(palavra1SemAcento);
     removerAcentos(palavra2SemAcento);
 
-    // Compara as palavras sem acentos
     return strcmp(palavra1SemAcento, palavra2SemAcento);
 }
 
@@ -196,10 +188,8 @@ void lerLinha(char *linha, FILE *entrada, FILE *saida) {
             iCont++;
         }
 
-        // Imprime a fila
         ItemFila *temp = fila->inicio;
         while(temp != NULL) {
-            // Verifica se o valor não é um "Nx-pop" e prefixa "push-"
             if (strstr(temp->valor, "-pop") == NULL) {
                 fprintf(saida, "push-%s ", temp->valor);
             } else {
