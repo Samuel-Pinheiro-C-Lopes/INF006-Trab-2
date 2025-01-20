@@ -62,6 +62,7 @@ LI* inicializarLI(int valor);
 ItemListaFloat* inicializarItemListaFloat(float valor);
 CabecoteListaInt* inicializarListaInt();
 CabecoteListaFloat* inicializarListaFloat();
+LinhaSaida* inicializarLinhaSaida();
 // adicionar
 void adicionarLE(int valor, LE **le);
 void adicionarLi(float valor, LE **le);
@@ -72,7 +73,7 @@ LinhaSaida* adicionarSaida(LinhaSaida *saida);
 // leitura
 int* leituraLe(char *linha, int *tamArray, int *contLinha);
 float* leituraLi(char *linha, int *tamArray, int *contLinha);
-void lerArquivo(LinhaSaida *saida, FILE *entrada);
+LinhaSaida* lerArquivo(FILE *entrada);
 // cadeia
 int converterStrPraInt(char *string);
 float cadeiaParaFloat(char* cadeia);
@@ -84,18 +85,22 @@ char* InteiroParaCadeia(int inteiro);
 char* FloatParaCadeia(float numero);
 int preencherCadeia(char *cadeia, char *conteudo);
 void atribuirCadeiaSaida(LinhaSaida *saida);
+void retirarEscape(char *cadeia);
 // matemática
 int exponencial(int inteiro, int expoente);
 int numAlgsInteiro(int inteiro);
 int numAlgsFloat(float numero);
 
 int main(){
-   
-   // testes
-    char teste[10] = "0";
-    float res = cadeiaParaFloat(teste);
-    printf("\nt: %f\n", res);
-   // testes
+    FILE *entrada = fopen("L1Q3.in", "r");
+    LinhaSaida *saida;
+
+    if (entrada == NULL)
+        return -55;
+    else 
+        // testes
+        saida = lerArquivo(entrada);
+        // testes
     return 1;
 }
 
@@ -104,9 +109,11 @@ int main(){
 // completando a linha de saída com base nisso
 // Parâmetros: <cbct: cabeçote das listas a ser preenchido> e <entrada: arquivo de entrada>
 // Retorna: <void>
-void lerArquivo(LinhaSaida *saida, FILE *entrada){
+LinhaSaida* lerArquivo(FILE *entrada){
     // linha a ser lida
     static char linha[tam_max_linha];
+
+    LinhaSaida *saida = NULL;
 
     int contLinha;
     int tamVetor = 0; 
@@ -119,9 +126,9 @@ void lerArquivo(LinhaSaida *saida, FILE *entrada){
     float *arrayLI;
     int *arrayLE;
 
-
     // enquanto houver linhas a serem lidas no arquivo de entrada
     while (fgets(linha, tam_max_linha, entrada) != NULL){
+        saida = adicionarSaida(saida);
         contLinha = 3;
         // LE
         arrayLE = leituraLe(linha, &tamVetor, &contLinha);
@@ -135,15 +142,33 @@ void lerArquivo(LinhaSaida *saida, FILE *entrada){
         arrayLI = leituraLi(linha, &tamVetor, &contLinha);
 
         // atribui cada um, já ordenados
-        inicioLE->li = inicializarLI(arrayLI[0]);
-        for (i = 1; i < tamVetor; i++)
-            adicionarLi(arrayLI[i], &inicioLE);
+        LE *atualLE = inicioLE;
+        int inicioVetor = 0;
+        while (atualLE != NULL)
+        {
+            for (i = inicioVetor; i < tamVetor; i++)
+                if (arrayLI[i] < atualLE->valor + (float) 1 && arrayLI[i] > atualLE->valor - (float) 1)
+                {
+                    adicionarLi(arrayLI[i], &atualLE);
+                    inicioVetor++;
+                }
+            atualLE = atualLE->proximo;
+        }
 
         // SUBSCREVER CADEIA CORRESPONDENTE E ATRIBUIR LINHA DE SAÍDA
         saida->inicioLE = inicioLE;
         atribuirCadeiaSaida(saida);
-        saida = adicionarSaida(saida);
     }
+
+    retirarEscape(saida->linha);
+    // retorna o início
+    return saida->prox;
+}
+
+void retirarEscape(char *cadeia){
+    char *indexador = cadeia;
+    indexador += proximosOuFimNaCadeia(cadeia, "\n");
+    *(indexador) = '\0';
 }
 
 // Sumário: recebe uma linha de saída com LE atribuído e constroí a
@@ -151,6 +176,8 @@ void lerArquivo(LinhaSaida *saida, FILE *entrada){
 // Parâmetros: <saida: estrutura que representará a linha de saída>
 // Retorna: <void>
 void atribuirCadeiaSaida(LinhaSaida *saida){
+    static char numeroLI[50];
+
     // indexadores de LE e LI
     LE *atualLE;
     LI *atualLI;
@@ -173,7 +200,8 @@ void atribuirCadeiaSaida(LinhaSaida *saida){
         {
             do {
                 // valor do LI
-                indexador += preencherCadeia(indexador, FloatParaCadeia(atualLI->valor));
+                sprintf(numeroLI, "%g", atualLI->valor);
+                indexador += preencherCadeia(indexador, numeroLI);
                 atualLI = atualLI->proximo;
                 // se ainda houver outro
                 if (atualLI != atualLE->li)
@@ -212,6 +240,13 @@ LI* inicializarLI(int valor){
     return li;
 }
 
+LinhaSaida* inicializarLinhaSaida(){
+    LinhaSaida* novaLinha = (LinhaSaida *) malloc(sizeof(LinhaSaida));
+    novaLinha->prox = NULL;
+    novaLinha->inicioLE == NULL;
+    return novaLinha;
+}
+
 void adicionarLE(int valor, LE **inicio){
     //Essa função funcionará usada inserindo os valores já ordenado anteriormente
     if((*inicio) == NULL){
@@ -229,13 +264,24 @@ void adicionarLE(int valor, LE **inicio){
 }
 
 // Sumário: adiciona uma nova linha após a atual, encadeia e retorna
-// ponteiro para a recém criada
+// ponteiro para a recém criada - ela é circular
 // Parâmetros: <saída: linha de saída a ter outra inserida posteriormente>
 // Retorna: <LinhaSaida *: ponteiro para a nova linha>
 LinhaSaida* adicionarSaida(LinhaSaida *saida){
-    LinhaSaida* novaLinha = (LinhaSaida *) malloc(sizeof(LinhaSaida));
-    novaLinha->prox = NULL;
-    saida->prox = novaLinha;
+    LinhaSaida* novaLinha = inicializarLinhaSaida();
+
+    if (saida == NULL) {
+        novaLinha->prox = novaLinha;
+    }
+    else 
+    {
+        LinhaSaida *atualLinha = saida;
+        while (atualLinha != saida)
+            atualLinha = atualLinha->prox;
+        novaLinha->prox = atualLinha->prox;
+        atualLinha->prox = novaLinha;
+    }
+
     return novaLinha;
 }
 
@@ -303,6 +349,7 @@ void adicionarItemListaIntOrdenado(CabecoteListaInt *cabecote, int valor){
     ItemListaInt *novoItem = inicializarItemListaInt(valor);
     ItemListaInt *atual;
 
+    cabecote->quantidadeItens++;
     // atribuir logo no início
     if (cabecote->primeiro == NULL || cabecote->primeiro->valor > novoItem->valor){
         novoItem->proximo = cabecote->primeiro;
@@ -425,14 +472,12 @@ float* leituraLi(char *linha, int *tamVetor, int *contLinha){
     // VETOR
 
     float *vetor = (float *) malloc(sizeof(float) * (*(tamVetor)));
-
     {
         float *atualVetor = vetor;
         ItemListaFloat *atualLista = listaFloat->primeiro;
         while (atualLista != NULL) {
-            *(atualVetor) = atualLista->valor;
+            *(atualVetor++) = atualLista->valor;
             atualLista = atualLista->proximo;
-            atualVetor += sizeof(float);
         }
     }
 
@@ -670,13 +715,18 @@ char* FloatParaCadeia(float numero){
     if (decimal > 0)
     {
         *(indexador++) = '.';
-
-        do {
-            decimal *= 10; // primeiro algarismo à diretira da vírgula
-            inteiro = (int) decimal; // fixa
-            *(indexador++) = inteiro - 48; // indexa
-            decimal = numero - inteiro; // progride para os remanescentes
-        } while (inteiro > 0 || ((int) (decimal * 10)) > 0);
+        for (int i = 0; i <  2; i++)
+        {
+            decimal *= 10;
+            inteiro = (int) decimal;
+            if (inteiro > 0 || ((int) (decimal * 10)) > 0){
+                decimal = decimal - inteiro; // progride para os remanescentes
+                *(indexador++) = inteiro -48;
+                continue;
+            }
+            else 
+                break;
+        }
     }
 
     // final da cadeia
@@ -701,7 +751,7 @@ int numAlgsInteiro(int inteiro){
 }
 
 // Sumário: Obtém a quantidade de algarismos presentes em um número
-// inteiro
+// float de até duas casas após a vírgula
 // Parâmetros: <inteiro: número cujos algarismos devem ser contabilizados>
 // Retorna: <int: quantidade de algarismos>
 int numAlgsFloat(float numero){
@@ -717,17 +767,24 @@ int numAlgsFloat(float numero){
         for (numAlgs = 0; inteiro != 0; numAlgs++)
             inteiro /= 10;
 
-
+    inteiro = (int) numero;
     // parte < 1
     decimal = numero - inteiro;
     // se houver
     if (decimal > 0)
     {
-        do {
-            decimal *= 10; // primeiro algarismo à diretira da vírgula
-            decimal = numero - inteiro; // progride para os remanescentes
-            numAlgs++;
-        } while (inteiro > 0 || ((int) (decimal * 10)) > 0);
+        for (int i = 0; i <  2; i++)
+        {
+            decimal *= 10;
+            inteiro = (int) decimal;
+            if (inteiro > 0 || ((int) (decimal * 10)) > 0){
+                decimal = decimal - inteiro; // progride para os remanescentes
+                numAlgs++;
+                continue;
+            }
+            else 
+                break;
+        }
     }
 
     return numAlgs;
