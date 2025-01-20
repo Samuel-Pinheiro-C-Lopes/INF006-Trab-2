@@ -4,6 +4,7 @@
 
 #define tam_max_linha (1000)
 #define tam_max_nome (50)
+#define tam_max_cadeia (255)
 
 typedef struct itemPilha ItemPilha;
 typedef struct itemFila ItemFila;
@@ -36,6 +37,10 @@ int tirarItemFila(Fila **fila, char *apagado);
 void lerLinha(char *linha, FILE *entrada, FILE *saida);
 char* toLower(char *palavra);
 int checarOrdemAlfabetica(char *palavra1, char *palavra2);
+char * obterSubCadeiaIntervalo(char *cadeia, int intervalo);
+char * obterSubCadeia(char *cadeia, char separador);
+char converterEspecial (char *cadeia);
+
 
 int main(){
     FILE *entrada = fopen("L1Q1.in", "r");
@@ -214,3 +219,72 @@ void lerLinha(char *linha, FILE *entrada, FILE *saida) {
     free(novoNome);
 }
 
+
+// Sumário converte um caractere especial para a sua forma convencional
+// Parâmetro: <cadeia: cadeia que representa o caracter especial>
+// Retorno: <char: caracter normalizado>
+char converterEspecial (char *cadeia){
+    static const char tabelaLexica[2][42][3] = 
+    {
+        {
+            "á", "à", "â", "ã", "é", "è", "ê", "ẽ", "í", "ì", "î", "ĩ", 
+            "ó", "ò", "ô", "õ", "ú", "ù", "û", "ũ", "ç", 
+            "Á", "À", "Â", "Â", "É", "È", "Ê", "Ẽ", "Í", "Ì", "Ĩ", "Î", 
+            "Ó", "Ò", "Ô", "Õ", "Ú", "Ù", "Ũ", "Û", "Ç"
+        },
+        {
+            "a", "a", "a", "a", "e", "e", "e", "e", "i", "i", "i", "i", 
+            "o", "o", "o", "o", "u", "u", "u", "u", "c", 
+            "A", "A", "A", "A", "E", "E", "E", "E", "I", "I", "I", "I", 
+            "O", "O", "O", "O", "U", "U", "U", "U", "C"
+        }
+    };
+
+    static int i;
+
+    for (i = 0; i < 42; i++)
+        if (tabelaLexica[0][i][0] == cadeia[0] && tabelaLexica[0][i][1] == cadeia[1])
+            return tabelaLexica[1][i][0];
+    
+    return 0; // não encontrou
+}
+
+// Sumário: obtém uma cadeia de caracteres como entrada tal como um separador, retorna
+// endereço para uma subcadeia contendo o início até o separador - sem o incluir
+// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <separador: caracter de separação>
+// Retorna: <char *: endereço da variável estática "subcadeia", contendo a subcadeia lida>
+char * obterSubCadeia(char *cadeia, char separador){
+    // subcadeia
+    static char subcadeia[tam_max_cadeia];
+    int i; // contador
+
+    // copia até sentinelas - tamanho máximo, separador e fim de linha
+    for (i = 0; cadeia[i] != separador && cadeia[i] != '\0' && cadeia[i] != '\n' && i < tam_max_linha - 1; i += sizeof(char))
+        subcadeia[i] = cadeia[i];
+
+    // final da subcadeia
+    subcadeia[i] = '\0';
+
+    // endereço da subcadeia
+    return subcadeia;
+}
+
+// Sumário: obtém uma cadeia de caracteres como entrada tal como um intervalo, retorna
+// endereço para uma subcadeia contendo o início até o caracter do final do intervalo
+// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <intervalo: quantidade de caracteres>
+// Retorna: <char *: endereço da variável estática "subcadeia", contendo a subcadeia lida>
+char * obterSubCadeiaIntervalo(char *cadeia, int intervalo){
+    // subcadeia
+    static char subcadeia[tam_max_cadeia];
+    int i; // contador
+
+    // copia até sentinelas - tamanho máximo, separador e fim de linha
+    for (i = 0; cadeia[i] != '\0' && i < intervalo && i < tam_max_linha - 1; i += sizeof(char))
+        subcadeia[i] = cadeia[i];
+
+    // final da subcadeia
+    subcadeia[i] = '\0';
+
+    // endereço da subcadeia
+    return subcadeia;
+}

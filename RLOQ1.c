@@ -51,6 +51,7 @@ int lerLista(Lista* novaLista, char entrada[], int* countLinha);
 void escreverLista(CbctListas* cbct, FILE *saida);
 // utilidades cadeia
 char* obterSubCadeia(char *cadeia, char separador);
+char * obterSubCadeia(char *cadeia, char separador);
 int preencherCadeiaInicializada(char *cadeia, char *conteudo);
 int preencherCadeia(char *cadeia, char *conteudo);
 int cadeiaParaInteiro(char* cadeia);
@@ -334,6 +335,27 @@ char * obterSubCadeia(char *cadeia, char separador){
     // endereço da subcadeia
     return subcadeia;
 }
+
+// Sumário: obtém uma cadeia de caracteres como entrada tal como um intervalo, retorna
+// endereço para uma subcadeia contendo o início até o caracter do final do intervalo
+// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <intervalo: quantidade de caracteres>
+// Retorna: <char *: endereço da variável estática "subcadeia", contendo a subcadeia lida>
+char * obterSubCadeiaIntervalo(char *cadeia, int intervalo){
+    // subcadeia
+    static char subcadeia[tam_max_cadeia];
+    int i; // contador
+
+    // copia até sentinelas - tamanho máximo, separador e fim de linha
+    for (i = 0; cadeia[i] != '\0' && i < intervalo && i < tam_max_linha - 1; i += sizeof(char))
+        subcadeia[i] = cadeia[i];
+
+    // final da subcadeia
+    subcadeia[i] = '\0';
+
+    // endereço da subcadeia
+    return subcadeia;
+}
+
 
 // Sumário: converte um texto para seu equivalente numérico inteiro
 // Parâmetros: <cadeia: indexador da cadeia a ser convertida>
