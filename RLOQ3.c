@@ -74,6 +74,8 @@ LinhaSaida* adicionarSaida(LinhaSaida *saida);
 int* leituraLe(char *linha, int *tamArray, int *contLinha);
 float* leituraLi(char *linha, int *tamArray, int *contLinha);
 LinhaSaida* lerArquivo(FILE *entrada);
+// escrita
+int escreverArquivo(LinhaSaida *linhasSaida, FILE *saida);
 // cadeia
 int converterStrPraInt(char *string);
 float cadeiaParaFloat(char* cadeia);
@@ -92,16 +94,49 @@ int numAlgsInteiro(int inteiro);
 int numAlgsFloat(float numero);
 
 int main(){
-    FILE *entrada = fopen("L1Q3.in", "r");
-    LinhaSaida *saida;
+    static const char arquivoEntrada[255] = "L1Q3.in";
+    static const char arquivoSaida[255] = "L1Q3.out";
 
-    if (entrada == NULL)
-        return -55;
-    else 
-        // testes
-        saida = lerArquivo(entrada);
-        // testes
-    return 1;
+    FILE *entrada = fopen(arquivoEntrada, "r");
+    FILE *saida = fopen(arquivoSaida, "w");
+    LinhaSaida *linhasSaida;
+
+    if (entrada == NULL){
+        printf("O arquivo de entrada de nome %s não se encontra presente\n", arquivoEntrada);
+        printf("Considere criar um arquivo de entrada com esse nome e colocar no diretório deste arquivo...\n");
+        printf("\nENCERRANDO\n");
+        return EXIT_FAILURE;
+    }
+    else{
+        linhasSaida = lerArquivo(entrada);
+        switch(escreverArquivo(linhasSaida, saida)){
+            case(EXIT_FAILURE): {
+                printf("\nNenhuma linha lida do arquivo de entrada...\n\nENCERRANDO\n");
+                return EXIT_FAILURE;
+            }
+            case (EXIT_SUCCESS): {
+                return EXIT_SUCCESS;
+            }
+        }
+    }
+}
+
+// Sumário: escreve no arquivo de saída com base nas linhas
+// atribuídas ao longo da execução do programa
+// Parâmetros: <inicioSaída *: ponteiro para início das linhas> e <saída: ponteiro
+// para arquivo a ser preenchido>
+// Retorna: <int: fracasso caso não haja entrada ou sucesso caso escreva>
+int escreverArquivo(LinhaSaida *inicioSaida, FILE *saida){
+    if (inicioSaida == NULL)
+        return EXIT_FAILURE; // sentinela
+
+    LinhaSaida *atualSaida = inicioSaida;
+    do{
+        fprintf(saida, "%s", atualSaida->linha);
+        atualSaida = atualSaida->prox;
+    } while (atualSaida != inicioSaida);
+
+    return EXIT_SUCCESS;
 }
 
 
@@ -165,6 +200,9 @@ LinhaSaida* lerArquivo(FILE *entrada){
     return saida->prox;
 }
 
+// Sumário: retira a ocorrência de '\n' da cadeia, caso haja
+// Parâmetro: <cadeia: cadeia que perderá o caracter de '\n'
+// Retorna: <void>
 void retirarEscape(char *cadeia){
     char *indexador = cadeia;
     indexador += proximosOuFimNaCadeia(cadeia, "\n");
@@ -243,7 +281,7 @@ LI* inicializarLI(int valor){
 LinhaSaida* inicializarLinhaSaida(){
     LinhaSaida* novaLinha = (LinhaSaida *) malloc(sizeof(LinhaSaida));
     novaLinha->prox = NULL;
-    novaLinha->inicioLE == NULL;
+    novaLinha->inicioLE = NULL;
     return novaLinha;
 }
 
