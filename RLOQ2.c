@@ -4,95 +4,84 @@
 
 #define tam_max_linha (1000)
 #define tam_max_nome (50)
+#define qtd_max_nomes (50)
 #define tam_max_cadeia (255)
 
 typedef struct itemPilha ItemPilha;
 typedef struct itemFila ItemFila;
 
-typedef struct itemPilha{
+typedef struct itemPilha {
     ItemPilha *abaixo;
     char *valor;
-}ItemPilha;
+} ItemPilha;
 
 typedef struct {
     ItemPilha *topo;
-}Pilha;
+} Pilha;
 
-typedef struct itemFila{
+typedef struct itemFila {
     ItemFila *atras;
     char *valor;
-}ItemFila;
+} ItemFila;
 
-typedef struct{
+typedef struct {
     ItemFila *inicio;
     ItemFila *fim;
-}Fila;
+} Fila;
 
 Pilha* iniciarPilha();
 void inserirItemPilha(Pilha **pilha, char *valor);
-int tirarItemPilha(Pilha **pilha, char *apagado);
+char* tirarItemPilha(Pilha **pilha);
 Fila* iniciarFila();
 void inserirItemFila(Fila **fila, char *valor);
 int tirarItemFila(Fila **fila, char *apagado);
 void lerLinha(char *linha, FILE *entrada, FILE *saida);
 char* toLower(char *palavra);
 int checarOrdemAlfabetica(char *palavra1, char *palavra2);
-char * obterSubCadeiaIntervalo(char *cadeia, int intervalo);
-char * obterSubCadeia(char *cadeia, char separador);
-char converterEspecial (char *cadeia);
+char converterEspecial(char *cadeia);
+void removerAcentos(char *palavra);
 
-
-int main(){
-    FILE *entrada = fopen("L1Q1.in", "r");
-    FILE *saida = fopen("L1Q1.out", "w");
-    char *linha = malloc(sizeof(char) * tam_max_linha);
+int main() {
+    FILE *entrada = fopen("L1Q2.in", "r");
+    FILE *saida = fopen("L1Q2.out", "w");
+    char *linha = malloc(tam_max_linha);
 
     lerLinha(linha, entrada, saida);
 
     fclose(entrada);
     fclose(saida);
-    return 1;
+    free(linha);
+    return 0;
 }
 
-Pilha* iniciarPilha(){
+Pilha* iniciarPilha() {
     Pilha *pilha = malloc(sizeof(Pilha));
     pilha->topo = NULL;
     return pilha;
 }
 
-void inserirItemPilha(Pilha **pilha, char *valor){
-    int iCont;
-
+void inserirItemPilha(Pilha **pilha, char *valor) {
     ItemPilha *novoItem = malloc(sizeof(ItemPilha));
     novoItem->abaixo = (*pilha)->topo;
-    novoItem->valor = malloc(sizeof(char) * strlen(valor));
-
+    novoItem->valor = malloc(strlen(valor) + 1);
+    
+    int iCont;
     for(iCont = 0; iCont < strlen(valor); iCont++){
         novoItem->valor[iCont] = valor[iCont];
     }
-
+    novoItem->valor[iCont] = '\0';
     (*pilha)->topo = novoItem;
 }
 
-int tirarItemPilha(Pilha **pilha, char *apagado){
-    //retorno 0: Erro ao apagar;
-    //retorno 1 : Apagado com sucesso;
-    int iCont;
-
-    if((*pilha)->topo == NULL){
-        return 0;
-    }
-    
-    for(iCont = 0; iCont < strlen((*pilha)->topo->valor); iCont++){
-        apagado[iCont] = (*pilha)->topo->valor[iCont];
-    }
-    apagado[strlen((*pilha)->topo->valor)] = '\0';
+char* tirarItemPilha(Pilha **pilha) {
+    char *apagado = malloc(tam_max_nome);
+    strcpy(apagado, (*pilha)->topo->valor);
     
     ItemPilha *itemApagado = (*pilha)->topo;
-    free((*pilha)->topo->valor);
     (*pilha)->topo = (*pilha)->topo->abaixo;
+    free(itemApagado->valor);
     free(itemApagado);
-    return 1;   
+    return apagado;
 }
 
 Fila* iniciarFila() {
@@ -103,16 +92,16 @@ Fila* iniciarFila() {
 }
 
 void inserirItemFila(Fila **fila, char *valor) {
-    int iCont;
     ItemFila *novoItem = malloc(sizeof(ItemFila));
     novoItem->valor = malloc(strlen(valor) + 1);
-
-    for (iCont = 0; iCont < strlen(valor); iCont++) {
+    
+    int iCont;
+    for(iCont = 0; iCont < strlen(valor); iCont++) {
         novoItem->valor[iCont] = valor[iCont];
     }
     novoItem->valor[iCont] = '\0';
-
     novoItem->atras = NULL;
+    
     if ((*fila)->inicio == NULL) {
         (*fila)->inicio = novoItem;
         (*fila)->fim = novoItem;
@@ -122,169 +111,104 @@ void inserirItemFila(Fila **fila, char *valor) {
     }
 }
 
-int tirarItemFila(Fila **fila, char *apagado) {
-    if ((*fila)->inicio == NULL) {
-        return 0;
+// Função para converter caracteres especiais (acentuados) para sem acento
+char converterEspecial(char *cadeia) {
+    static const char *tabelaLexica[2][42] = {
+        { "á", "à", "â", "ã", "é", "è", "ê", "ẽ", "í", "ì", "î", "ĩ", 
+          "ó", "ò", "ô", "õ", "ú", "ù", "û", "ũ", "ç", 
+          "Á", "À", "Â", "Á", "É", "È", "Ê", "Ẽ", "Í", "Ì", "Ĩ", "Î", 
+          "Ó", "Ò", "Ô", "Õ", "Ú", "Ù", "Ũ", "Û", "Ç" },
+        { "a", "a", "a", "a", "e", "e", "e", "e", "i", "i", "i", "i", 
+          "o", "o", "o", "o", "u", "u", "u", "u", "c", 
+          "A", "A", "A", "A", "E", "E", "E", "E", "I", "I", "I", "I", 
+          "O", "O", "O", "O", "U", "U", "U", "U", "C" }
+    };
+
+    int i, j;
+    // Verifica se o caractere tem acento ou é uma letra especial
+    for (i = 0; i < 42; i++) {
+        for (j = 0; j < strlen(tabelaLexica[0][i]); j++) {
+            if (cadeia[0] == tabelaLexica[0][i][j]) {
+                // Se encontrou a correspondência, retorna o caractere sem acento
+                return tabelaLexica[1][i][0];
+            }
+        }
     }
-
-    int iCont;
-    for (iCont = 0; iCont < strlen((*fila)->inicio->valor); iCont++) {
-        apagado[iCont] = (*fila)->inicio->valor[iCont];
-    }
-    apagado[iCont] = '\0';
-
-    ItemFila *itemApagado = (*fila)->inicio;
-    (*fila)->inicio = (*fila)->inicio->atras;
-    free(itemApagado->valor);
-    free(itemApagado);
-
-    if ((*fila)->inicio == NULL) {
-        (*fila)->fim = NULL;
-    }
-
-    return 1;
+    return cadeia[0]; // Se não for acentuado, retorna o próprio caractere
 }
 
-char* toLower(char *palavra){
-    int iCont;
-    char *palavraMinuscula = malloc(sizeof(char) * strlen(palavra));
-    
-    for(iCont = 0; iCont < strlen(palavra); iCont++){
-        palavraMinuscula[iCont] = palavra[iCont] >= 'A' && palavra[iCont] <= 'Z' ? palavra[iCont] + ' ' : palavra[iCont];
+// Função para remover acentos de uma palavra
+void removerAcentos(char *palavra) {
+    int i;
+    for (i = 0; palavra[i] != '\0'; i++) {
+        palavra[i] = converterEspecial(&palavra[i]);
     }
-
-    return palavraMinuscula;
 }
 
-int checarOrdemAlfabetica(char *palavra1, char *palavra2){
-    //Retorno 1 : Primeira palavra vem primeiro;
-    //Retorno 2 : Segunda palavra vem primeiro;
-    //Caso as palavras sejam iguais, retorna 2;
-    //Caso as palavras sejam iguais, porém uma delas tem mais caracteres, retorna o resultado para que tiver menos venha primeiro;
-    //Essa função já faz strings auxiliares para comparar as palavras em minúsculo, não sendo necessário tratamento prévio.
-    int iCont;
-    int tamanhoMaximoCheck = strlen(palavra1) < strlen(palavra2) ? strlen(palavra1) : strlen(palavra2);
+// Função para comparar duas palavras, ignorando acentos
+int checarOrdemAlfabetica(char *palavra1, char *palavra2) {
+    // Faz cópias das palavras para não modificar os valores originais
+    char palavra1SemAcento[strlen(palavra1) + 1];
+    char palavra2SemAcento[strlen(palavra2) + 1];
     
-    char *p1Minusculo = toLower(palavra1);
-    char *p2Minusculo = toLower(palavra2);
+    strcpy(palavra1SemAcento, palavra1);
+    strcpy(palavra2SemAcento, palavra2);
 
-    for(iCont = 0; iCont < tamanhoMaximoCheck; iCont++){
-        if(p1Minusculo[iCont] == p2Minusculo[iCont]){
-            continue;
-        }
-        if(p1Minusculo[iCont] > p2Minusculo[iCont]){
-            return 2;
-        }
-        else{
-            return 1;
-        }
-    }
-    return strlen(palavra1) < strlen(palavra2) ? 1 : 2;
+    // Remove os acentos das cópias
+    removerAcentos(palavra1SemAcento);
+    removerAcentos(palavra2SemAcento);
 
+    // Compara as palavras sem acentos
+    return strcmp(palavra1SemAcento, palavra2SemAcento);
 }
 
 void lerLinha(char *linha, FILE *entrada, FILE *saida) {
-    //Essa função receber os arquivos de entrada, saída e a linha como parâmetro, ou seja, basta alocar a memória deles;
-    //Ela intera sobre as linhas do arquivo de entrada e, para cada uma, gera uma pilha e uma fila que serão preenchidas pelos dados advindos dela;
-    //Dentro do terceiro while, é separado um nome de forma isolada, então é nele (mais específico dentro do if) que deve ser feitas as 
-        //operções de push e pop da pilha e lista dentro da linha;
-    //Ao sair do segundo while, a pilha estará pronta para ser printada;
-    //É necessário a escrita dentro dessa função a cada interação da linha, pois as estruturas de dados estão de escopo por linha;
-    int iCont, jCont;
-    char *novoNome = malloc(sizeof(char) * tam_max_nome);
-
-    while (fgets(linha, tam_max_linha, entrada) != NULL) {
+    char *novoNome = malloc(tam_max_nome);
+    while(fgets(linha, tam_max_linha, entrada) != NULL) {
         Pilha *pilha = iniciarPilha();
         Fila *fila = iniciarFila();
-        iCont = 0;
+        int iCont = 0, jCont, popsSeguidos = 0;
 
-        while (linha[iCont] != '\n' && linha[iCont] != '\0') {
+        while(linha[iCont] != '\n' && linha[iCont] != '\0') {
             jCont = 0;
-
-            while (linha[iCont] != ' ' && linha[iCont] != '\n' && linha[iCont] != '\0') {
+            while(linha[iCont] != ' ' && linha[iCont] != '\n' && linha[iCont] != '\0') {
                 novoNome[jCont] = linha[iCont];
                 iCont++;
                 jCont++;
             }
-
-            if (jCont > 0) {
-                novoNome[jCont] = '\0';
-                //O nome já estará pronto para ser adicionado na pilha. Aqui deverá ser feita as validações.
+            novoNome[jCont] = '\0';
+            
+            if(pilha->topo == NULL || checarOrdemAlfabetica(novoNome, pilha->topo->valor) == 2) {
+                inserirItemPilha(&pilha, novoNome);
+                inserirItemFila(&fila, novoNome);
+            } else {
+                popsSeguidos = 0;
+                while(pilha->topo != NULL && checarOrdemAlfabetica(novoNome, pilha->topo->valor) != 2) {
+                    tirarItemPilha(&pilha);
+                    popsSeguidos++;
+                }
+                char popRegistro[10];
+                sprintf(popRegistro, "%dx-pop", popsSeguidos);
+                inserirItemFila(&fila, popRegistro);
+                inserirItemPilha(&pilha, novoNome);
+                inserirItemFila(&fila, novoNome);
             }
-
             iCont++;
         }
-    }
 
-    free(novoNome);
-}
-
-
-// Sumário converte um caractere especial para a sua forma convencional
-// Parâmetro: <cadeia: cadeia que representa o caracter especial>
-// Retorno: <char: caracter normalizado>
-char converterEspecial (char *cadeia){
-    static const char tabelaLexica[2][42][3] = 
-    {
-        {
-            "á", "à", "â", "ã", "é", "è", "ê", "ẽ", "í", "ì", "î", "ĩ", 
-            "ó", "ò", "ô", "õ", "ú", "ù", "û", "ũ", "ç", 
-            "Á", "À", "Â", "Â", "É", "È", "Ê", "Ẽ", "Í", "Ì", "Ĩ", "Î", 
-            "Ó", "Ò", "Ô", "Õ", "Ú", "Ù", "Ũ", "Û", "Ç"
-        },
-        {
-            "a", "a", "a", "a", "e", "e", "e", "e", "i", "i", "i", "i", 
-            "o", "o", "o", "o", "u", "u", "u", "u", "c", 
-            "A", "A", "A", "A", "E", "E", "E", "E", "I", "I", "I", "I", 
-            "O", "O", "O", "O", "U", "U", "U", "U", "C"
+        // Imprime a fila
+        ItemFila *temp = fila->inicio;
+        while(temp != NULL) {
+            // Verifica se o valor não é um "Nx-pop" e prefixa "push-"
+            if (strstr(temp->valor, "-pop") == NULL) {
+                fprintf(saida, "push-%s ", temp->valor);
+            } else {
+                fprintf(saida, "%s ", temp->valor);
+            }
+            temp = temp->atras;
         }
-    };
-
-    static int i;
-
-    for (i = 0; i < 42; i++)
-        if (tabelaLexica[0][i][0] == cadeia[0] && tabelaLexica[0][i][1] == cadeia[1])
-            return tabelaLexica[1][i][0];
-    
-    return 0; // não encontrou
-}
-
-// Sumário: obtém uma cadeia de caracteres como entrada tal como um separador, retorna
-// endereço para uma subcadeia contendo o início até o separador - sem o incluir
-// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <separador: caracter de separação>
-// Retorna: <char *: endereço da variável estática "subcadeia", contendo a subcadeia lida>
-char * obterSubCadeia(char *cadeia, char separador){
-    // subcadeia
-    static char subcadeia[tam_max_cadeia];
-    int i; // contador
-
-    // copia até sentinelas - tamanho máximo, separador e fim de linha
-    for (i = 0; cadeia[i] != separador && cadeia[i] != '\0' && cadeia[i] != '\n' && i < tam_max_linha - 1; i += sizeof(char))
-        subcadeia[i] = cadeia[i];
-
-    // final da subcadeia
-    subcadeia[i] = '\0';
-
-    // endereço da subcadeia
-    return subcadeia;
-}
-
-// Sumário: obtém uma cadeia de caracteres como entrada tal como um intervalo, retorna
-// endereço para uma subcadeia contendo o início até o caracter do final do intervalo
-// Parâmetros: <cadeia: cadeia de caracteres de entrada> e <intervalo: quantidade de caracteres>
-// Retorna: <char *: endereço da variável estática "subcadeia", contendo a subcadeia lida>
-char * obterSubCadeiaIntervalo(char *cadeia, int intervalo){
-    // subcadeia
-    static char subcadeia[tam_max_cadeia];
-    int i; // contador
-
-    // copia até sentinelas - tamanho máximo, separador e fim de linha
-    for (i = 0; cadeia[i] != '\0' && i < intervalo && i < tam_max_linha - 1; i += sizeof(char))
-        subcadeia[i] = cadeia[i];
-
-    // final da subcadeia
-    subcadeia[i] = '\0';
-
-    // endereço da subcadeia
-    return subcadeia;
+        fprintf(saida, "\n");
+        free(fila);
+    }
+    free(novoNome);
 }
