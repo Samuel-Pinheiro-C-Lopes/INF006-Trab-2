@@ -96,6 +96,7 @@ int numAlgsFloat(float numero);
 int main(){
     static const char arquivoEntrada[255] = "L1Q3.in";
     static const char arquivoSaida[255] = "L1Q3.out";
+    int retorno;
 
     FILE *entrada = fopen(arquivoEntrada, "r");
     FILE *saida = fopen(arquivoSaida, "w");
@@ -105,20 +106,24 @@ int main(){
         printf("O arquivo de entrada de nome %s não se encontra presente\n", arquivoEntrada);
         printf("Considere criar um arquivo de entrada com esse nome e colocar no diretório deste arquivo...\n");
         printf("\nENCERRANDO\n");
-        return EXIT_FAILURE;
+        retorno = EXIT_FAILURE;
     }
     else{
         linhasSaida = lerArquivo(entrada);
         switch(escreverArquivo(linhasSaida, saida)){
             case(EXIT_FAILURE): {
                 printf("\nNenhuma linha lida do arquivo de entrada...\n\nENCERRANDO\n");
-                return EXIT_FAILURE;
+                retorno = EXIT_FAILURE;
             }
             case (EXIT_SUCCESS): {
-                return EXIT_SUCCESS;
+                retorno = EXIT_SUCCESS;
             }
         }
     }
+
+    fclose(entrada);
+    fclose(saida);
+    return retorno;
 }
 
 // Sumário: escreve no arquivo de saída com base nas linhas
